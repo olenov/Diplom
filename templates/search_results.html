@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<a href="/edit/{{ result.id }}">Редактировать</a>
+<form method="post" action="/deleta">
+    <input type="hidden" name="id" value="{{result.id}}">
+    <button class="button1" type="submit" name="knopka">Удалить</button>
+</form>
+  {% for student in result %}
+        Имя      <div class="asd">{{ student.name }}</div><br>
+        Фамилия  <div class="asd">{{ student.second_name }}</div><br>
+        Отчество  <div class="asd">{{ student.patronymic }}</div><br>
+        Место рождения  <div class="asd">{{ student.birth_place }}</div><br>
+        Дата рождения  <div class="asd">{{ student.birth_date }}</div><br>
+        Адрес прописки  <div class="asd">{{ student.registration_adress }}</div><br>
+        Базовое образование  <div class="asd">{{ student.basic_education }}</div><br>
+        ФИО родителей, место работы, номера телефонов  <div class="asd">{{ student.full_names_of_parents_work_place_phone_number }}</div><br>
+        Финансовое положение  <div class="asd">{{ student.financial_situation }}</div><br>
+        Временный адрес  <div class="asd">{{ student.temporary_adress }}</div><br>
+        Номер телефона  <div class="asd">{{ student.phone_number }}</div><br>
+        Хобби и интересы  <div class="asd">{{ student.hobbies_and_interests }}</div><br>
+        Место работы  <div class="asd">{{ student.work_place }}</div><br>
+        ИНН  <div class="asd">{{ student.INN }}</div><br>
+        Паспортные данные  <div class="asd">{{ student.passport_data }}</div><br>
+        Снилс  <div class="asd">{{ student.SNILS }}</div><br>
+  {% endfor %}
+</body>
+</html>

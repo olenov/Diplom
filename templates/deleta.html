@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>udalenie</title>
+</head>
+<body>
+<h2>Вы уверены, что хотите удалить студента {{ student.title }}?</h2>
+<form method="post" action="/del_yes">
+ <input type="hidden" name="id" value="{{ student.id }}">
+<button type="submit">Да</button>
+</form>
+<form method="" action="/main">
+<button type="submit">Нет</button>
+</form>
+</body>
+</html>
