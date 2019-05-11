@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Главная</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link href="{{ url_for('static', filename='main-style40.css') }}" type=text/css rel=stylesheet>
+    <link href="{{ url_for('static', filename='main-style44.css') }}" type=text/css rel=stylesheet>
 
 
 </head>
@@ -15,45 +15,82 @@
     <button type="submit" id="ss">Найти</button>
     </form>
 </div>
-<form id="color" method="post" action="/add">
-    Имя<input class="q" type="text" name="name"/><br>
-    Фамилия<input class="q" type="text" name="second_name"/><br>
-    Отчество<input class="q" type="text" name="patronymic"/><br>
-    Место рождения<input class="q" type="text" name="birth_place"/><br>
-    Дата рождения<input class="q" type="text" name="birth_date"/><br>
-    Адрес прописки<input class="q" type="text" name="registration_adress"/><br>
-    Базовое образование<input class="q" type="text" name="basic_education"/><br>
-    ФИО родителей, место работы, номера телефонов<input class="q" type="text" name="full_names_of_parents_work_place_phone_number"/><br>
-    Финансовое положение<input class="q" type="text" name="financial_situation"/><br>
-    Временный адрес<input class="q" type="text" name="temporary_adress"/><br>
-    Телефонный номер<input class="q" type="text" name="phone_number"/><br>
-    Хобби и увлечения<input class="q" type="text" name="hobbies_and_interests"/><br>
-    Место работы<input class="q" type="text" name="work_place"/><br>
-    ИНН<input class="q" type="text" name="INN"/><br>
-    Паспортные данные<input class="q" type="text" name="passport_data"/><br>
-    СНИЛС<input class="q" type="text" name="SNILS"/><br>
-    <button type="submit">Добавить студента</button>
+<h3>Список выпускников</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Имя</th>
+      <th scope="col">Фамилия</th>
+      <th scope="col">Отчество</th>
+        <th scope="col">Место рождения</th>
+      <th scope="col">Дата рождения</th>
+      <th scope="col">Адрес прописки</th>
+        <th scope="col">Базовое образование</th>
+      <th scope="col">ФИО родителей, место работы, номера телефонов</th>
+      <th scope="col">Финансовое положение</th>
+        <th scope="col">Временный адрес</th>
+      <th scope="col">Номер телефона</th>
+      <th scope="col">Хобби и интересы</th>
+        <th scope="col">Место работы</th>
+      <th scope="col">ИНН</th>
+      <th scope="col">Паспортные данные</th>
+        <th scope="col">СНИЛС</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for student in pages.items %}
+  <tr>
+      <th scope="row">{{ student.id }}</th>
+      <td>{{ student.name }}</td>
+      <td>{{ student.second_name }}</td>
+      <td>{{ student.patronymic }}</td>
+      <td>{{ student.birth_place }}</td>
+      <td>{{ student.birth_date }}</td>
+      <td>{{ student.registration_adress }}</td>
+      <td>{{ student.basic_education }}</td>
+      <td>{{ student.full_names_of_parents_work_place_phone_number }}</td>
+      <td>{{ student.financial_situation }}</td>
+      <td>{{ student.temporary_adress }}</td>
+      <td>{{ student.phone_number }}</td>
+      <td>{{ student.hobbies_and_interests }}</td>
+      <td>{{ student.work_place }}</td>
+      <td>{{ student.INN }}</td>
+      <td>{{ student.passport_data }}</td>
+      <td>{{ student.SNILS }}</td>
+    </tr>
+  {% endfor %}
+
+  </tbody>
+</table>
+
+<nav>
+  <ul class="pagination">
+    <li {% if pages.has_prev %} class="disabled">
+        {% endif %}
+      <a class="page-link" href="./main?page={{ pages.prev_num }}" aria-label="Previous"  >Previous</a>
+    </li>
+
+      {% for page in pages.iter_pages() %}
+        <li {% if page == pages.page %} class="page-item active" {% endif %}>
+            <a class="page-link" href="./main?page={{ page }}">{{ page }}</a></li>
+      {% endfor %}
+
+      <li {% if pages.has_next %} class="disabled">
+        {% endif %}
+      <a class="page-link" href="./main?page={{ pages.next_num }}" aria-label="Next">Next</a>
+    </li>
+  </ul>
+</nav>
+
+<form method="post" action="/addpage">
+    <button class="button1" type="submit" name="knopka">Добавить студента</button>
 </form>
 
-<h3>Список выпускников</h3>
-{%  for student in students %}
+
+{%  for student in pages.items %}
 <div>
-        Имя  <div class="asd">{{ student.name }}</div><br>
-        Фамилия  <div class="asd">{{ student.second_name }}</div><br>
-        Отчество  <div class="asd">{{ student.patronymic }}</div><br>
-        Место рождения  <div class="asd">{{ student.birth_place }}</div><br>
-        Дата рождения  <div class="asd">{{ student.birth_date }}</div><br>
-        Адрес прописки  <div class="asd">{{ student.registration_adress }}</div><br>
-        Базовое образование  <div class="asd">{{ student.basic_education }}</div><br>
-        ФИО родителей, место работы, номера телефонов  <div class="asd">{{ student.full_names_of_parents_work_place_phone_number }}</div><br>
-        Финансовое положение  <div class="asd">{{ student.financial_situation }}</div><br>
-        Временный адрес  <div class="asd">{{ student.temporary_adress }}</div><br>
-        Номер телефона  <div class="asd">{{ student.phone_number }}</div><br>
-        Хобби и интересы  <div class="asd">{{ student.hobbies_and_interests }}</div><br>
-        Место работы  <div class="asd">{{ student.work_place }}</div><br>
-        ИНН  <div class="asd">{{ student.INN }}</div><br>
-        Паспортные данные  <div class="asd">{{ student.passport_data }}</div><br>
-        Снилс  <div class="asd">{{ student.SNILS }}</div><br>
+
     <a href="/edit/{{ student.id }}">Редактировать</a>
 <form method="post" action="/deleta">
     <input type="hidden" name="id" value="{{student.id}}">
@@ -61,5 +98,10 @@
 </form>
 </div>
 {% endfor %}
+
+<form method="post" action="/registration">
+    <button class="button1" type="submit" name="knopka">Регистрация</button>
+</form>
+
 </body>
 </html>

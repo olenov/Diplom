@@ -4,6 +4,7 @@ import flask_whooshalchemy as wa
 import datetime, re
 from flask_migrate import Migrate,MigrateCommand
 from flask_script import Manager
+import hashlib
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://sql:1@localhost/Students'
@@ -56,6 +57,21 @@ class Student(db.Model):
         self.INN = INN
         self.passport_data = passport_data
         self.SNILS = SNILS
+
+
+class auth(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    login = db.Column(db.String(100))
+    password = db.Column(db.String(100))
+    hesh = db.Column(db.String(100))
+
+    def __init__(self, login, password, hesh):
+        self.login = login
+        self.password = password
+        self.hesh = hesh
+
+students = Student.query
+pages = students.paginate()
 
 wa.whoosh_index(app, Student)
 

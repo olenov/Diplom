@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from app import app
 from app import Student
 from app import db
-
+from hashlib import sha256
 
 @app.route('/')
 def homepage():
@@ -25,7 +25,15 @@ def homepage1():
 
 @app.route('/main', methods=['GET'])
 def main():
-    return render_template('main.html', students=Student.query.all())
+    page =  request.args.get('page')
+    if page and page.isdigit():
+        page =  int(page)
+    else:
+        page = 1
+    students = Student.query
+    pages = students.paginate(page=page, per_page=3)
+    return render_template('main.html', students=Student.query.all(), pages=pages)
+
 
 @app.route('/add', methods=['POST'])
 def add_student():
@@ -52,6 +60,11 @@ def add_student():
     db.session.commit()
 
     return redirect(url_for('main'))
+
+
+@app.route('/addpage', methods=['POST'])
+def adding():
+    return render_template('add.html')
 
 @app.route('/deleta',methods=['POST'])
 def delete():
@@ -116,6 +129,20 @@ def show_results():
     search_word = request.form['word']
     students = Student.query.whoosh_search(search_word).all()
     return render_template('search_results.html',result=students)
+
+@app.route('/registration',methods=['POST'])
+def reg():
+    return render_template('registration.html')
+
+@app.route('/hashf')
+def enc():
+    passtohash = request.form['password']
+    signature = sha256(passtohash.encode()).hexdigest()
+    return render_template('registration.html', signature=signature)
+
+
+
+
 
 
 
