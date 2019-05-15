@@ -1,33 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>udalenie</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link href="{{ url_for('static', filename='edit-style2.css') }}" type=text/css rel=stylesheet>
-
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
 
 </head>
 <body>
-<h2>Редактирование студента {{ student }}?</h2>
+<h2>Редактирование данных студента {{ student.name }} {{ student.second_name }}</h2>
 <form method="post" action="/editing">
     <input type="hidden" name="id" value="{{ student.id }}">
-    Имя<input class="q" type="text" name="name"><br>
-    Фамилия<input class="q" type="text" name="second_name"><br>
-    Отчество<input class="q" type="text" name="patronymic"><br>
-    Место рождения<input class="q" type="text" name="birth_place"><br>
-    Дата рождения<input class="q" type="text" name="birth_date"><br>
-    Адрес прописки<input class="q" type="text" name="registration_adress"><br>
-    Базовое образование<input class="q" type="text" name="basic_education"><br>
-    ФИО родителей, место работы, номера телефонов<input class="q" type="text" name="full_names_of_parents_work_place_phone_number"><br>
-    Финансовое положение<input class="q" type="text" name="financial_situation"><br>
-    Временный адрес<input class="q" type="text" name="temporary_adress"><br>
-    Телефонный номер<input class="q" type="text" name="phone_number"><br>
-    Хобби и интересы<input class="q" type="text" name="hobbies_and_interests"><br>
-    Место работы<input class="q" type="text" name="work_place"><br>
-    ИНН<input class="q" type="text" name="INN"><br>
-    Паспортные данные<input class="q" type="text" name="passport_data"><br>
-    СНИЛС<input class="q" type="text" name="SNILS"><br>
+    Имя<input placeholder="{{ student.name }}" class="q" type="text" name="name"><br>
+    Фамилия<input placeholder="{{ student.second_name }}" class="q" type="text" name="second_name"><br>
+    Отчество<input placeholder="{{ student.patronymic }}" class="q" type="text" name="patronymic"><br>
+    Место рождения<input placeholder="{{ student.birth_place }}" class="q" type="text" name="birth_place"><br>
+    Дата рождения<input placeholder="{{ student.birth_date }}" class="q" type="text" name="birth_date"><br>
+    Адрес прописки<input placeholder="{{ student.registration_adress }}" class="q" type="text" name="registration_adress"><br>
+    Базовое образование<input placeholder="{{ student.basic_education }}" class="q" type="text" name="basic_education"><br>
+    ФИО родителей, место работы, номера телефонов<input placeholder="{{ student.full_names_of_parents_work_place_phone_number }}" class="q" type="text" name="full_names_of_parents_work_place_phone_number"><br>
+    Финансовое положение<input placeholder="{{ student.financial_situation }}" class="q" type="text" name="financial_situation"><br>
+    Временный адрес<input placeholder="{{ student.temporary_adress }}" class="q" type="text" name="temporary_adress"><br>
+    Телефонный номер<input placeholder="{{ student.phone_number }}" class="q" type="text" name="phone_number"><br>
+    Хобби и интересы<input placeholder="{{ student.hobbies_and_interests }}" class="q" type="text" name="hobbies_and_interests"><br>
+    Место работы<input placeholder="{{ student.work_place }}" class="q" type="text" name="work_place"><br>
+    ИНН<input placeholder="{{ student.INN }}" class="q" type="text" name="INN"><br>
+    Паспортные данные<input placeholder="{{ student.passport_data }}" class="q" type="text" name="passport_data"><br>
+    СНИЛС<input placeholder="{{ student.SNILS }}" class="q" type="text" name="SNILS"><br>
     <button type="submit" name="knopochka">Подтвердить</button>
 </form>
 <form method="" action="/main">
@@ -37,3 +32,4 @@
 
 </body>
 </html>
+{% endblock %}

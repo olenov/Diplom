@@ -1,5 +1,5 @@
 body{
-background-color:green;
+background-color:white;
 }
 .button1{
 margin-left:50px;
@@ -10,9 +10,6 @@ color:black;font-family:"Arial";
 .q{
 position:absolute;
 right:850px;
-}
-h3{
-background-color:green;color:black;
 }
 #add{
 background-color:orange;

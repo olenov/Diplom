@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link href="{{ url_for('static', filename='edit-style2.css') }}" type=text/css rel=stylesheet>
-    <link href="{{ url_for('static', filename='main-style43.css') }}" type=text/css rel=stylesheet>
-</head>
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
 <body>
 <form id="color" method="post" action="/add">
     Имя<input class="q" type="text" name="name"/><br>
@@ -30,3 +24,4 @@
 
 </body>
 </html>
+{% endblock %}
