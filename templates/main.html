@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Главная{% endblock %}
 {% block content %}
-
+welcome, {{ name }}
 <h3>Список выпускников</h3>
 <table class="table">
   <thead>
     <tr>
-      <th scope="col">Имя</th>
       <th scope="col">Фамилия</th>
+      <th scope="col">Имя</th>
       <th scope="col">Отчество</th>
         <th scope="col">Место рождения</th>
       <th scope="col">Дата рождения</th>
@@ -27,8 +27,8 @@
   <tbody>
   {% for student in pages.items %}
   <tr>
-      <td>{{ student.name }}</td>
       <td>{{ student.second_name }}</td>
+      <td>{{ student.name }}</td>
       <td>{{ student.patronymic }}</td>
       <td>{{ student.birth_place }}</td>
       <td>{{ student.birth_date }}</td>

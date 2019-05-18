@@ -23,6 +23,10 @@
         user-select: none;
       }
 
+      #username {
+      background-color:white;
+      }
+
       @media (min-width: 768px) {
         .bd-placeholder-img-lg {
           font-size: 3.5rem;
@@ -33,10 +37,6 @@
         padding-top: 5rem;
       }
 
-      .starter-template {
-          padding: 3rem 1.5rem;
-          text-align: center;
-      }
     </style>
   </head>
   <body>
@@ -49,39 +49,41 @@
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="/addpage">Добавить выпускника <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="/add">Добавить выпускника <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">Link</a>
       </li>
     </ul>
+    <div id="username"> {{ session['username'] }} </div>
     <form class="form-inline my-2 my-lg-0" action="/search_results" method="post">
      <input name="word" class="form-control mr-sm-2" type="text" placeholder="Поиск" aria-label="Поиск">
      <button class="btn btn-secondary my-2 my-sm-0"  type="submit" id="ss">Найти</button>
     </form>
     <div class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Dropdown button
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> {{ name }}
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
     <a class="dropdown-item" href="#">Action</a>
     <a class="dropdown-item" href="#">Another action</a>
-    <a class="dropdown-item" href="#">Something else here</a>
+    <a class="dropdown-item" href="/logout">Выйти</a>
   </div>
 </div>
   </div>
 </nav>
 
-<main role="main" class="container">
-
-  <div class="starter-template">
-    {% block content %}
-    {% endblock %}
+<div class="container-fluid">
+  <div class="row">
+    <main role="main" class="col-12">
+      {% block content %}
+      {% endblock %}
+    </main><!-- /.container -->
   </div>
-
-</main><!-- /.container -->
+</div>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-      <script>window.jQuery || document.write('<script src="/docs/4.3/assets/js/vendor/jquery-slim.min.js"><\/script>')</script><script src="/docs/4.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script></body>
+<script>window.jQuery || document.write('<script src="/docs/4.3/assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+<!--script src="https://getbootstrap.com/docs/4.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script-->
+</body>
 </html>
 
 

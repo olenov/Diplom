@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
 <a href="/edit/{{ result.id }}">Редактировать</a>
 <form method="post" action="/deleta">
     <input type="hidden" name="id" value="{{result.id}}">
@@ -28,5 +24,4 @@
         Паспортные данные  <div class="asd">{{ student.passport_data }}</div><br>
         Снилс  <div class="asd">{{ student.SNILS }}</div><br>
   {% endfor %}
-</body>
-</html>
+{% endblock %}

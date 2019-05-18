@@ -5,21 +5,35 @@ import datetime, re
 from flask_migrate import Migrate,MigrateCommand
 from flask_script import Manager
 import hashlib
+from flask_login import LoginManager, UserMixin
+from flask_bootstrap import Bootstrap
+
+
 
 app = Flask(__name__)
+bootstrap = Bootstrap(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://sql:1@localhost/Students'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 app.config['WHOOSH_BASE'] = 'whoosh'
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 db = SQLAlchemy(app)
 migrate = Migrate(app,db)
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Admin.query.get(int(user_id))
 
 def slugify(s):
     return re.sub('[^\w]+','-',s).lower()
 
 class Student(db.Model):
-    __searchable__ = ['name', 'second_name', 'patronymic']
+    __searchable__ = ['name', 'second_name', 'patronymic', 'birth_date']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     second_name = db.Column(db.String(100))
@@ -57,6 +71,16 @@ class Student(db.Model):
         self.INN = INN
         self.passport_data = passport_data
         self.SNILS = SNILS
+
+
+
+class Admin(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(15), unique=True)
+    email = db.Column(db.String(50), unique=True)
+    password = db.Column(db.String(80))
+
+
 
 
 class auth(db.Model):
