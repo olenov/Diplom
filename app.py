@@ -7,7 +7,8 @@ from flask_script import Manager
 import hashlib
 from flask_login import LoginManager, UserMixin
 from flask_bootstrap import Bootstrap
-
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 
 
 app = Flask(__name__)
@@ -32,8 +33,10 @@ def load_user(user_id):
 def slugify(s):
     return re.sub('[^\w]+','-',s).lower()
 
+
+
 class Student(db.Model):
-    __searchable__ = ['name', 'second_name', 'patronymic', 'birth_date']
+    __searchable__ = ['name', 'second_name', 'patronymic']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     second_name = db.Column(db.String(100))

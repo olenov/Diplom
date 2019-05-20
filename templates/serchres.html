@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Главная{% endblock %}
 {% block content %}
-welcome, {{ name }}
+welcome, {{ name }}, govnyuk
 <h3>Список выпускников</h3>
 <table class="table">
   <thead>
@@ -25,7 +25,7 @@ welcome, {{ name }}
     </tr>
   </thead>
   <tbody>
-  {% for student in pages.items %}
+  {% for student in students %}
   <tr>
       <td>{{ student.second_name }}</td>
       <td>{{ student.name }}</td>
@@ -80,18 +80,5 @@ welcome, {{ name }}
   </tbody>
 </table>
 
-<nav aria-label="Page navigation example">
-  <ul class="pagination">
-    <li {% if not pages.has_prev %} class="page-item disabled" {% endif %}>
-        <a class="page-link" href="main?page={{ pages.prev_num }}">Previous</a></li>
-    {% for page in pages.iter_pages() %}
-      <li {% if page == pages.page %} class="page-item active" {% endif %}>
-          <a class="page-link" href="main?page={{ page }}">{{ page }}</a></li>
-      {% endfor %}
-    <li {% if not pages.has_next %} class="page-item disabled" {% endif %}>
-      <a class="page-link" href="main?page={{ pages.next_num }}">Next</a></li>
-  </ul>
-</nav>
-<a href="/openfiledialog">openfiledialog</a>
 {% endblock %}
 

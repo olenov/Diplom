@@ -12,6 +12,9 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from functools import wraps
 from wtforms.validators import InputRequired, Email, Length
 from werkzeug.security import generate_password_hash, check_password_hash
+from openpyxl import load_workbook
+
+
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
@@ -170,6 +173,28 @@ def show_results():
 @app.route('/registration',methods=['POST'])
 def reg():
     return render_template('registration.html')
+
+@app.route('/openfiledialog')
+def ofd():
+    root = Tk()
+    ftypes = [('excel file',"*.xlsx")]
+    ttl  = "Title"
+    dir1 = 'C:\\'
+    root.fileName = askopenfilename(filetypes = ftypes, initialdir = dir1, title = ttl)
+    if not root.fileName:
+        return redirect(url_for('main'))
+    else:
+        wb_val = load_workbook(filename = root.fileName)
+        sheet_val = wb_val['Лист1']
+        A1_val = sheet_val['A1'].value
+        values = []
+        for i in range(1,16):
+            values.append(sheet_val['A' + str(i)].value)
+        s=''
+        for i in values:
+            s = s + " " + i
+
+        return s
 
 
 
