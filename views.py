@@ -13,6 +13,7 @@ from functools import wraps
 from wtforms.validators import InputRequired, Email, Length
 from werkzeug.security import generate_password_hash, check_password_hash
 from openpyxl import load_workbook
+import xlsxwriter
 
 
 
@@ -23,9 +24,8 @@ def is_safe_url(target):
            ref_url.netloc == test_url.netloc
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[InputRequired(),Length(min=4,max=15)])
-    password = PasswordField('Password',validators=[InputRequired(),Length(min=4,max=80)])
-    remember = BooleanField('remember me')
+    username = StringField('Имя пользователя', validators=[InputRequired(),Length(min=4,max=15)])
+    password = PasswordField('Пароль',validators=[InputRequired(),Length(min=4,max=80)])
 
 class RegisterForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
@@ -47,9 +47,9 @@ def login():
         user = Admin.query.filter_by(username=form.username.data).first()
         if user:
             if check_password_hash(user.password, form.password.data):
-                login_user(user, remember=form.remember.data)
+                login_user(user)
                 return redirect(url_for('main'))
-        return '<h1>Invalid username or password</h1>'
+        return redirect(url_for('login'))
         #return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
     print(form)
     return render_template('login.html', form=form)
@@ -196,9 +196,40 @@ def ofd():
 
         return s
 
+@app.route('/report_generation')
+def generation():
+    return render_template('report_generation.html')
 
 
-
+@app.route('/report_generate',methods=['POST','GET'])
+def generate():
+    workbook = xlsxwriter.Workbook('Отчет о выпускниках.xlsx')
+    worksheet = workbook.add_worksheet()
+    students = Student.query.all()
+    count = [1]*100
+    letter = [65]*100
+    Letter = 64
+    for i in students:
+        if request.form.get('option2'):
+            worksheet.write_column(chr(letter[0]) + str(count[0]),[i.second_name, ])
+            count[0] += 1
+            if count[0] == 2:
+                Letter += 1
+                letter[0] = Letter
+        if request.form.get('option3'):
+            worksheet.write_column(chr(letter[1]) + str(count[1]),[i.name, ])
+            count[1] += 1
+            if count[1] == 2:
+                Letter += 1
+                letter[1] = Letter
+        if request.form.get('option4'):
+            worksheet.write_column(chr(letter[2]) + str(count[2]),[i.patronymic, ])
+            count[2] += 1
+            if count[2] == 2:
+                Letter += 1
+                letter[2] = Letter
+    workbook.close()
+    return redirect(url_for('main'))
 
 
 

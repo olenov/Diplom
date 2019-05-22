@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Главная{% endblock %}
 {% block content %}
+<style>
+    .col-12{
+  padding-left:8%;
+  }
+  .h3{
+  padding-left:200px;
+  }
+</style>
 welcome, {{ name }}
 <h3>Список выпускников</h3>
 <table class="table">
@@ -83,15 +91,15 @@ welcome, {{ name }}
 <nav aria-label="Page navigation example">
   <ul class="pagination">
     <li {% if not pages.has_prev %} class="page-item disabled" {% endif %}>
-        <a class="page-link" href="main?page={{ pages.prev_num }}">Previous</a></li>
+        <a class="page-link" href="main?page={{ pages.prev_num }}">Назад</a></li>
     {% for page in pages.iter_pages() %}
       <li {% if page == pages.page %} class="page-item active" {% endif %}>
           <a class="page-link" href="main?page={{ page }}">{{ page }}</a></li>
       {% endfor %}
     <li {% if not pages.has_next %} class="page-item disabled" {% endif %}>
-      <a class="page-link" href="main?page={{ pages.next_num }}">Next</a></li>
+      <a class="page-link" href="main?page={{ pages.next_num }}">Вперед</a></li>
   </ul>
 </nav>
-<a href="/openfiledialog">openfiledialog</a>
+
 {% endblock %}
 

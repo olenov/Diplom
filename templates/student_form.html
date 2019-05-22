@@ -13,6 +13,16 @@
   {% else %}
   Добавление нового студента
   {% endif %}</h2>
+<style>
+  .form-control{
+    width: 25%;
+    margin-left:40px
+  }
+  label{
+  padding-left:40px;
+  }
+
+</style>
 <form action="{{ url_for('save') }}" method="post">
   {% if student %} <input value="{{student.id}}" name="id" type="hidden"> {% endif %}
   <div class="form-group">
