@@ -1,22 +1,16 @@
-     G.id_Group
-      ,G.Name
-      ,G.id_Pln
-	  ,PL.id_People
-	  ,Surname
-	  ,PL.Name
-	  ,Patronymic
-	  ,DateIn
-	  ,DateOut
-	  ,OldSurname
-	  ,OldName
-	  ,OldPatronymic
-	  ,Sex
-	  ,BornDate
-	  ,BornPlace
-	  ,DocSerial
-	  ,DocNo
-	  ,DocDistributed
-	  ,DocDate
-	  ,id_Nationality
-	  ,SSN
-	  ,INN
+G.id_Group,
+G.Name,
+G.id_Pln,
+PL.id_People,
+Surname,
+PL.Name,
+Patronymic,
+DateIn,
+DateOut,
+OldSurname,
+OldName,
+OldPatronymic,
+Sex,
+BornDate,
+BornPlace,
+id_Nationality
