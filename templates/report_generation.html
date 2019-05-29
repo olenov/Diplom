@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+<form action="/report_generate" method="post">
+<input type="checkbox" name="1" value="a2">Фамилия<Br>
+   <input type="checkbox" name="2" value="a3">Имя<Br>
+   <input type="checkbox" name="3" value="a4">Отчество<Br>
+    <input type="checkbox" name="4" value="a4">Год выпуска<Br>
+    <input type="checkbox" name="2001" value="a2">2001<Br>
+   <input type="checkbox" name="2013" value="a3">2013<Br>
+   <input type="checkbox" name="2002" value="a4">2002<Br>
+    <button type="submit">Формировать отчет</button>
+</form>
+{% endblock %}
