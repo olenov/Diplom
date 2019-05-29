@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Главная{% endblock %}
 {% block content %}
-welcome, {{ name }}
-<h3>Список выпускников</h3>
+<h3>Результаты поиска</h3>
 <table class="table">
   <thead>
     <tr>
@@ -22,12 +21,15 @@ welcome, {{ name }}
       <th scope="col">ИНН</th>
       <th scope="col">Паспортные данные</th>
         <th scope="col">СНИЛС</th>
+        <th scope="col">Год выпуска</th>
+        <th scope="col">Красный диплом</th>
+        <th scope="col">Номер диплома</th>
     </tr>
   </thead>
   <tbody>
   {% for student in students %}
   <tr>
-      <td>{{ student.second_name }}</td>
+      <td>{{ student.surname }}</td>
       <td>{{ student.name }}</td>
       <td>{{ student.patronymic }}</td>
       <td>{{ student.birth_place }}</td>
@@ -43,6 +45,9 @@ welcome, {{ name }}
       <td>{{ student.INN }}</td>
       <td>{{ student.passport_data }}</td>
       <td>{{ student.SNILS }}</td>
+      <td>{{ student.year_of_issue }}</td>
+      <td>{{ student.diploma_with_distinction }}</td>
+      <td>{{ student.diploma_number }}</td>
       <td><a href="/edit/{{ student.id }}">Редактировать</a></td>
       <td> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
     Удалить

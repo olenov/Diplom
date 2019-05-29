@@ -1,21 +1,22 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import render_template, request, redirect, url_for, session, send_from_directory
 from app import *
-from hashlib import sha256
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField
 from urllib.parse import urlparse, urljoin
 import os
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-engine = create_engine('postgres://sql:1@localhost/Students', echo=True)
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from functools import wraps
+from flask_login import login_user, login_required, logout_user, current_user
 from wtforms.validators import InputRequired, Email, Length
 from werkzeug.security import generate_password_hash, check_password_hash
 from openpyxl import load_workbook
 import xlsxwriter
+from flask_mail import Message
+import string
+import random
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 
-
+engine = create_engine('postgres://sql:1@localhost/Students', echo=True)
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
@@ -80,10 +81,6 @@ if __name__ == "__main__":
     app.secret_key = os.urandom(12)
     app.run(debug=True,host='0.0.0.0', port=4000)
 
-@app.route('/secretpage')
-def homepage1():
-    py=Student(title='xaxaxexe')
-    return py.title
 
 @app.route('/main', methods=['GET'])
 @login_required
@@ -94,8 +91,9 @@ def main():
     else:
         page = 1
     students = Student.query
+
     pages = students.paginate(page=page, per_page=3)
-    return render_template('main.html', students=Student.query.all(), pages=pages, name=current_user.username)
+    return render_template('main.html', students=students.all(), pages=pages, name=current_user.username)
 
 
 @app.route('/save', methods=['POST'])
@@ -105,14 +103,15 @@ def save():
         id = request.form['id']
         student = Student.query.get(id)
     else:
-        student = Student(request.form['name'], request.form['second_name'], request.form['patronymic'],request.form['birth_place'],request.form['birth_place'],
+        student = Student(request.form['name'], request.form['surname'], request.form['patronymic'],request.form['birth_place'],request.form['birth_place'],
                           request.form['registration_adress'],request.form['basic_education'],request.form['full_names_of_parents_work_place_phone_number'],
                           request.form['financial_situation'],request.form['temporary_adress'], request.form['phone_number'], request.form['work_place'],
-                          request.form['INN'],request.form['passport_data'], request.form['SNILS'], request.form['SNILS'])
+                          request.form['INN'],request.form['passport_data'], request.form['SNILS'], request.form['SNILS'], request.form['year_of_issue'],
+                          request.form['diploma_with_distinction'] , request.form['diploma_number'])
         print(student)
 
     student.name = request.form['name']
-    student.second_name = request.form['second_name']
+    student.surname = request.form['surname']
     student.patronymic = request.form['patronymic']
     student.birth_place = request.form['birth_place']
     student.birth_date = request.form['birth_date']
@@ -127,6 +126,9 @@ def save():
     student.INN = request.form['INN']
     student.passport_data = request.form['passport_data']
     student.SNILS = request.form['SNILS']
+    student.year_of_issue = request.form['year_of_issue']
+    student.diploma_with_distinction = request.form['diploma_with_distinction']
+    student.diploma_number = request.form['diploma_number']
 
     db.session.add(student)
     db.session.commit()
@@ -186,7 +188,6 @@ def ofd():
     else:
         wb_val = load_workbook(filename = root.fileName)
         sheet_val = wb_val['Лист1']
-        A1_val = sheet_val['A1'].value
         values = []
         for i in range(1,16):
             values.append(sheet_val['A' + str(i)].value)
@@ -201,36 +202,86 @@ def generation():
     return render_template('report_generation.html')
 
 
+
 @app.route('/report_generate',methods=['POST','GET'])
 def generate():
     workbook = xlsxwriter.Workbook('Отчет о выпускниках.xlsx')
+    count = 0
     worksheet = workbook.add_worksheet()
-    students = Student.query.all()
+    if count == 0 and request.form.get('2001'):
+        students = Student.query.filter_by(year_of_issue='2001')
+        count += 1
+
+    if count == 0 and request.form.get('2013'):
+        students = Student.query.filter_by(year_of_issue='2013')
+        count += 1
+    if count > 0 and request.form.get('2013'):
+        students = students.union(Student.query.filter_by(year_of_issue='2013'))
+
+    if count == 0 and request.form.get('2002'):
+        students = Student.query.filter_by(year_of_issue='2002')
+        count += 1
+    if count > 0 and request.form.get('2002'):
+        students = students.union(Student.query.filter_by(year_of_issue='2002'))
+
     count = [1]*100
     letter = [65]*100
     Letter = 64
     for i in students:
-        if request.form.get('option2'):
-            worksheet.write_column(chr(letter[0]) + str(count[0]),[i.second_name, ])
+        if request.form.get('1'):
+            worksheet.write_column(chr(letter[0]) + str(count[0]),[i.surname, ])
             count[0] += 1
             if count[0] == 2:
                 Letter += 1
                 letter[0] = Letter
-        if request.form.get('option3'):
+        if request.form.get('2'):
             worksheet.write_column(chr(letter[1]) + str(count[1]),[i.name, ])
             count[1] += 1
             if count[1] == 2:
                 Letter += 1
                 letter[1] = Letter
-        if request.form.get('option4'):
+        if request.form.get('3'):
             worksheet.write_column(chr(letter[2]) + str(count[2]),[i.patronymic, ])
             count[2] += 1
             if count[2] == 2:
                 Letter += 1
                 letter[2] = Letter
+        if request.form.get('4'):
+            worksheet.write_column(chr(letter[3]) + str(count[3]),[i.year_of_issue, ])
+            count[3] += 1
+            if count[3] == 2:
+                Letter += 1
+                letter[3] = Letter
     workbook.close()
-    return redirect(url_for('main'))
+    return send_from_directory('C:\\Users\\Константин\\PycharmProjects\\blog','Отчет о выпускниках.xlsx')#redirect(url_for('main'))
 
+@app.route('/change_password')
+def change_pass():
+    user = current_user
+    return render_template('change_password.html', user=user, name=user.username, b=current_user.password)
+
+@app.route('/new_pass', methods=['POST','GET'])
+def new_pass():
+    if check_password_hash(current_user.password, request.form['old_password']) :
+        current_user.password = generate_password_hash(request.form['new_password'], method='sha256')
+    db.session.commit()
+    return render_template('change_password.html', user=current_user,a=generate_password_hash (request.form['old_password']))
+
+@app.route('/forgot_password')
+def forgot_pass():
+    user = Admin.query.filter_by(username='spider-man').first()
+    return render_template('forgot_password.html', user=user)
+
+@app.route('/send_new_pass', methods=['POST','GET'])
+def send_pass():
+    user = Admin.query.filter_by(username=request.form['username']).first()
+    password = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    user.password = generate_password_hash(password, method='sha256')
+    db.session.commit()
+    msg = Message('hello!', sender='olenov1994@gmail.com', recipients=['olenov1994@gmail.com'])
+    msg.body = 'vash noviy password -' + password
+    mail.send(msg)
+    return render_template('forgot_password.html', user=user)
 
 
 

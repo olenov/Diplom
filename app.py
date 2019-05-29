@@ -1,21 +1,23 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import flask_whooshalchemy as wa
-import datetime, re
+import re
 from flask_migrate import Migrate,MigrateCommand
 from flask_script import Manager
-import hashlib
 from flask_login import LoginManager, UserMixin
 from flask_bootstrap import Bootstrap
-from tkinter import Tk
-from tkinter.filedialog import askopenfilename
-
+from flask_mail import Mail
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://sql:1@localhost/Students'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 app.config['WHOOSH_BASE'] = 'whoosh'
+app.config['MAIL_SERVER'] =  'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'olenov1994@gmail.com'
+app.config['MAIL_PASSWORD'] = 'soslow1994'
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 db = SQLAlchemy(app)
 migrate = Migrate(app,db)
@@ -24,7 +26,7 @@ manager.add_command('db', MigrateCommand)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-
+mail = Mail(app)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -36,10 +38,10 @@ def slugify(s):
 
 
 class Student(db.Model):
-    __searchable__ = ['name', 'second_name', 'patronymic']
+    __searchable__ = ['name', 'patronymic']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    second_name = db.Column(db.String(100))
+    surname = db.Column(db.String(100))
     patronymic = db.Column(db.String(100))
     birth_date = db.Column(db.String(100))
     birth_place = db.Column(db.String(100))
@@ -54,12 +56,15 @@ class Student(db.Model):
     INN =db.Column(db.String(100))
     passport_data = db.Column(db.String(100))
     SNILS = db.Column(db.String(100))
+    year_of_issue = db.Column(db.String(100))
+    diploma_with_distinction = db.Column(db.String(100))
+    diploma_number = db.Column(db.String(100))
 
-    def __init__(self, name, second_name, patronymic, birth_place, birth_date, registration_adress, basic_education,
+    def __init__(self, name, surname, patronymic, birth_place, birth_date, registration_adress, basic_education,
                  full_names_of_parents_work_place_phone_number, financial_situation, temporary_adress, phone_number, hobbies_and_interests,
-                 work_place, INN, passport_data, SNILS):
+                 work_place, INN, passport_data, SNILS, year_of_issue, diploma_with_distinction, diploma_number):
         self.name=name
-        self.second_name=second_name
+        self.surname=surname
         self.patronymic=patronymic
         self.birth_place=birth_place
         self.birth_date=birth_date
@@ -74,8 +79,11 @@ class Student(db.Model):
         self.INN = INN
         self.passport_data = passport_data
         self.SNILS = SNILS
+        self.year_of_issue = year_of_issue
+        self.diploma_with_distinction = diploma_with_distinction
+        self.diploma_number = diploma_number
 
-
+wa.whoosh_index(app, Student)
 
 class Admin(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -96,6 +104,7 @@ class auth(db.Model):
         self.login = login
         self.password = password
         self.hesh = hesh
+
 
 students = Student.query
 pages = students.paginate()
