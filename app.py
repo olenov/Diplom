@@ -7,6 +7,9 @@ from flask_script import Manager
 from flask_login import LoginManager, UserMixin
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
+import os
+
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -36,6 +39,16 @@ def slugify(s):
     return re.sub('[^\w]+','-',s).lower()
 
 
+class Grp(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_plan = db.Column(db.Integer)
+    name = db.Column(db.String(100))
+    students = db.relationship('Student', backref='grp', lazy='dynamic')
+
+    def __init__(self, id_plan, name):
+        self.id_plan = id_plan
+        self.name = name
+
 
 class Student(db.Model):
     __searchable__ = ['name', 'patronymic']
@@ -59,10 +72,13 @@ class Student(db.Model):
     year_of_issue = db.Column(db.String(100))
     diploma_with_distinction = db.Column(db.String(100))
     diploma_number = db.Column(db.String(100))
+    image = db.Column(db.String(100))
+    grp_id = db.Column(db.Integer, db.ForeignKey('grp.id'))
+    id_People = db.Column(db.Integer)
 
     def __init__(self, name, surname, patronymic, birth_place, birth_date, registration_adress, basic_education,
                  full_names_of_parents_work_place_phone_number, financial_situation, temporary_adress, phone_number, hobbies_and_interests,
-                 work_place, INN, passport_data, SNILS, year_of_issue, diploma_with_distinction, diploma_number):
+                 work_place, INN, passport_data, SNILS, year_of_issue, diploma_with_distinction, diploma_number, image, grp_id, id_People):
         self.name=name
         self.surname=surname
         self.patronymic=patronymic
@@ -82,6 +98,10 @@ class Student(db.Model):
         self.year_of_issue = year_of_issue
         self.diploma_with_distinction = diploma_with_distinction
         self.diploma_number = diploma_number
+        self.image = image
+        self.grp_id = grp_id
+        self.id_People = id_People
+
 
 wa.whoosh_index(app, Student)
 
@@ -94,22 +114,10 @@ class Admin(UserMixin, db.Model):
 
 
 
-class auth(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    login = db.Column(db.String(100))
-    password = db.Column(db.String(100))
-    hesh = db.Column(db.String(100))
+#students = Student.query
+#pages = students.paginate()
 
-    def __init__(self, login, password, hesh):
-        self.login = login
-        self.password = password
-        self.hesh = hesh
-
-
-students = Student.query
-pages = students.paginate()
-
-wa.whoosh_index(app, Student)
+#wa.whoosh_index(app, Student)
 
 #class Student(db.Model):
 #    id = db.Column(db.Integer, primary_key=True)

@@ -23,7 +23,13 @@
   }
 
 </style>
-<form action="{{ url_for('save') }}" method="post">
+
+</form>
+<form action="{{ url_for('save') }}" method="post" enctype="multipart/form-data">
+  <input id="file-picker" type="file" name="file" accept="image/*" multiple>
+  <input type="text" name="image_name" class="form-control">
+  {% if student.image %} <img src="{{ student.image }}" width="100" height="100"> {% endif %}
+<div id="msg"></div>
   {% if student %} <input value="{{student.id}}" name="id" type="hidden"> {% endif %}
   <div class="form-group">
     <label for="surname">{% if student %}Фамилия{% endif %}</label>
@@ -101,8 +107,14 @@
     <label for="formGroupExampleInput21">{% if student %}Номер диплома{% endif %}</label>
     <input type="text" name="diploma_number" class="form-control" id="formGroupExampleInput21" {% if student %}value="{{ student.diploma_number }}"{% else %}placeholder="Номер диплома"{% endif %}>
   </div>
-
-
+  <div class="form-group">
+    <label for="formGroupExampleInput22">{% if student %}ID группы{% endif %}</label>
+    <input type="text" name="grp_id" class="form-control" id="formGroupExampleInput22" {% if student %}value="{{ student.grp_id }}"{% else %}placeholder="ID группы"{% endif %}>
+  </div>
+  <div class="form-group">
+    <label for="formGroupExampleInput23">{% if student %}ID People{% endif %}</label>
+    <input type="text" name="id_People" class="form-control" id="formGroupExampleInput23" {% if student %}value="{{ student.id_People }}"{% else %}placeholder="ID People"{% endif %}>
+  </div>
     <input type="submit" class="btn btn-primary" value="Подтвердить">
     <button type="cancel" class="btn btn-primary">Отмена</button>
 </form>

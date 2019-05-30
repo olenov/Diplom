@@ -99,6 +99,12 @@ def main():
 @app.route('/save', methods=['POST'])
 @login_required
 def save():
+    target = os.path.join(APP_ROOT, 'static/')
+    z = request.files.getlist("file")[0]
+    z.filename = request.form['image_name']
+    filename = z.filename
+    destination = "/".join([target, filename])
+    z.save(destination)
     if 'id' in request.form:
         id = request.form['id']
         student = Student.query.get(id)
@@ -107,7 +113,7 @@ def save():
                           request.form['registration_adress'],request.form['basic_education'],request.form['full_names_of_parents_work_place_phone_number'],
                           request.form['financial_situation'],request.form['temporary_adress'], request.form['phone_number'], request.form['work_place'],
                           request.form['INN'],request.form['passport_data'], request.form['SNILS'], request.form['SNILS'], request.form['year_of_issue'],
-                          request.form['diploma_with_distinction'] , request.form['diploma_number'])
+                          request.form['diploma_with_distinction'] , request.form['diploma_number'], '/static/' + filename, request.form['grp_id'], request.form['id_People'])
         print(student)
 
     student.name = request.form['name']
@@ -129,6 +135,11 @@ def save():
     student.year_of_issue = request.form['year_of_issue']
     student.diploma_with_distinction = request.form['diploma_with_distinction']
     student.diploma_number = request.form['diploma_number']
+    student.image = '/static/' + filename
+    student.grp_id = request.form['grp_id']
+    student.id_People = request.form['id_People']
+
+
 
     db.session.add(student)
     db.session.commit()
@@ -187,15 +198,12 @@ def ofd():
         return redirect(url_for('main'))
     else:
         wb_val = load_workbook(filename = root.fileName)
-        sheet_val = wb_val['Лист1']
-        values = []
-        for i in range(1,16):
-            values.append(sheet_val['A' + str(i)].value)
-        s=''
-        for i in values:
-            s = s + " " + i
-
-        return s
+        sheet_val = wb_val['students']
+        for i in range(1,20):
+            student = Student(sheet_val['F'+str(i)].value, sheet_val['E'+str(i)].value, sheet_val['G'+str(i)].value, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None,)
+            db.session.add(student)
+            db.session.commit()
+        return redirect(url_for('main'))
 
 @app.route('/report_generation')
 def generation():
@@ -282,6 +290,11 @@ def send_pass():
     msg.body = 'vash noviy password -' + password
     mail.send(msg)
     return render_template('forgot_password.html', user=user)
+
+
+
+
+
 
 
 

@@ -32,6 +32,7 @@
         <th scope="col">Год выпуска</th>
         <th scope="col">Красный диплом</th>
         <th scope="col">Номер диплома</th>
+        <th scope="col">Фотография</th>
     </tr>
   </thead>
   <tbody>
@@ -56,6 +57,7 @@
       <td>{{ student.year_of_issue}}</td>
       <td>{{ student.diploma_with_distinction}}</td>
       <td>{{ student.diploma_number}}</td>
+      <td><img src="{{ student.image}}" width="100" height="100" alt="Нет фотографии"></td>
       <td><a href="/edit/{{ student.id }}"><button class="btn btn-primary"><svg id="i-edit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
     <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z" />
 </svg></button></a></td>
@@ -109,6 +111,5 @@
       <a class="page-link" href="main?page={{ pages.next_num }}">Вперед</a></li>
   </ul>
 </nav>
-
 {% endblock %}
 
