@@ -40,10 +40,11 @@ def slugify(s):
 
 
 class Grp(db.Model):
+    __searchable__ = ['name']
     id = db.Column(db.Integer, primary_key=True)
     id_plan = db.Column(db.Integer)
     name = db.Column(db.String(100))
-    students = db.relationship('Student', backref='grp', lazy='dynamic')
+    students = db.relationship('Student', backref='grp', lazy='dynamic', cascade_backrefs='False')
 
     def __init__(self, id_plan, name):
         self.id_plan = id_plan
@@ -75,10 +76,10 @@ class Student(db.Model):
     image = db.Column(db.String(100))
     grp_id = db.Column(db.Integer, db.ForeignKey('grp.id'))
     id_People = db.Column(db.Integer)
-
+    social_web_profile = db.Column(db.String(100))
     def __init__(self, name, surname, patronymic, birth_place, birth_date, registration_adress, basic_education,
                  full_names_of_parents_work_place_phone_number, financial_situation, temporary_adress, phone_number, hobbies_and_interests,
-                 work_place, INN, passport_data, SNILS, year_of_issue, diploma_with_distinction, diploma_number, image, grp_id, id_People):
+                 work_place, INN, passport_data, SNILS, year_of_issue, diploma_with_distinction, diploma_number, image, grp_id, id_People, social_web_profile):
         self.name=name
         self.surname=surname
         self.patronymic=patronymic
@@ -101,9 +102,12 @@ class Student(db.Model):
         self.image = image
         self.grp_id = grp_id
         self.id_People = id_People
+        self.social_web_profile = social_web_profile
+
 
 
 wa.whoosh_index(app, Student)
+wa.whoosh_index(app, Grp)
 
 class Admin(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -114,15 +118,8 @@ class Admin(UserMixin, db.Model):
 
 
 
-#students = Student.query
-#pages = students.paginate()
+students = Student.query
+pages = students.paginate()
 
-#wa.whoosh_index(app, Student)
+wa.whoosh_index(app, Student)
 
-#class Student(db.Model):
-#    id = db.Column(db.Integer, primary_key=True)
-#    Name = db.Column(db.String(32), nullable=False)
-#    Second_name = db.Column(db.String(32), nullable=False)
-#
-#    Student_id = db.Column(db.Integer, db.ForeignKey('student.id'),nullable=False)
-#    student = db.relationship('Student', backref=db.backref())

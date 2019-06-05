@@ -92,7 +92,7 @@ def main():
         page = 1
     students = Student.query
 
-    pages = students.paginate(page=page, per_page=3)
+    pages = students.paginate(page=page, per_page=5)
     return render_template('main.html', students=students.all(), pages=pages, name=current_user.username)
 
 
@@ -100,11 +100,14 @@ def main():
 @login_required
 def save():
     target = os.path.join(APP_ROOT, 'static/')
-    z = request.files.getlist("file")[0]
-    z.filename = request.form['image_name']
-    filename = z.filename
-    destination = "/".join([target, filename])
-    z.save(destination)
+    if request.files.getlist("file"):
+        z = request.files.getlist("file")[0]
+        z.filename = request.form['name'] +' ' + request.form['surname']
+        filename = z.filename
+        destination = "/".join([target, filename])
+        z.save(destination)
+    else:
+        filename = ''
     if 'id' in request.form:
         id = request.form['id']
         student = Student.query.get(id)
@@ -113,7 +116,7 @@ def save():
                           request.form['registration_adress'],request.form['basic_education'],request.form['full_names_of_parents_work_place_phone_number'],
                           request.form['financial_situation'],request.form['temporary_adress'], request.form['phone_number'], request.form['work_place'],
                           request.form['INN'],request.form['passport_data'], request.form['SNILS'], request.form['SNILS'], request.form['year_of_issue'],
-                          request.form['diploma_with_distinction'] , request.form['diploma_number'], '/static/' + filename, request.form['grp_id'], request.form['id_People'])
+                          request.form['diploma_with_distinction'] , request.form['diploma_number'], '/static/' + filename, request.form['grp_id'], request.form['id_People'], request.form['social_web_profile'])
         print(student)
 
     student.name = request.form['name']
@@ -136,10 +139,15 @@ def save():
     student.diploma_with_distinction = request.form['diploma_with_distinction']
     student.diploma_number = request.form['diploma_number']
     student.image = '/static/' + filename
-    student.grp_id = request.form['grp_id']
-    student.id_People = request.form['id_People']
-
-
+    if request.form['grp_id']:
+        student.grp_id = request.form['grp_id']
+    else:
+        student.grp_id = None
+    if request.form['id_People']:
+        student.id_People = request.form['id_People']
+    else:
+        student.id_People = None
+    student.social_web_profile = request.form['social_web_profile']
 
     db.session.add(student)
     db.session.commit()
@@ -150,13 +158,13 @@ def save():
 @app.route('/add')
 @login_required
 def adding():
-    return render_template('student_form.html')
+    return render_template('student_form.html', name=current_user.username)
 
 @app.route('/deleta',methods=['POST'])
 def delete():
     id = request.form['id']
     student = Student.query.get(id)
-    return render_template('deleta.html', student=student)
+    return render_template('deleta.html', student=student, name=current_user.username)
 
 @app.route('/del_yes',methods=['POST'])
 def delet():
@@ -170,18 +178,26 @@ def delet():
 @login_required
 def edit(id):
     student = Student.query.get(id)
-    return render_template('student_form.html', student=student)
+    group = Grp.query.all()
+    return render_template('student_form.html', student=student, group=group, name=current_user.username)
 
 @app.route('/search_results',methods=['POST'])
 def show_results():
     search_word = request.form['word']
     students = Student.query.whoosh_search(search_word).all()
+    groups = Grp.query.whoosh_search(search_word).all()
     page = request.args.get('page')
     if page and page.isdigit():
         page = int(page)
     else:
         page = 1
-    return render_template('serchres.html',students=students, pages=pages, name=current_user.username)
+    return render_template('serchres.html',students=students, pages=pages, name=current_user.username, groups=groups)
+
+@app.route('/stud_in_grp/<id>')
+def ssig(id):
+    grp = Grp.query.get(id)
+    students = grp.students.all()
+    return render_template('stofgrp.html', students=students, name=current_user.username)
 
 @app.route('/registration',methods=['POST'])
 def reg():
@@ -200,14 +216,14 @@ def ofd():
         wb_val = load_workbook(filename = root.fileName)
         sheet_val = wb_val['students']
         for i in range(1,20):
-            student = Student(sheet_val['F'+str(i)].value, sheet_val['E'+str(i)].value, sheet_val['G'+str(i)].value, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None,)
+            student = Student(sheet_val['F'+str(i)].value, sheet_val['E'+str(i)].value, sheet_val['G'+str(i)].value, '', '', '','','','','','','','','','','','','','','',None,0,'')
             db.session.add(student)
             db.session.commit()
         return redirect(url_for('main'))
 
 @app.route('/report_generation')
 def generation():
-    return render_template('report_generation.html')
+    return render_template('report_generation.html', name=current_user.username)
 
 
 
@@ -215,6 +231,7 @@ def generation():
 def generate():
     workbook = xlsxwriter.Workbook('Отчет о выпускниках.xlsx')
     count = 0
+    students = Student.query.all()
     worksheet = workbook.add_worksheet()
     if count == 0 and request.form.get('2001'):
         students = Student.query.filter_by(year_of_issue='2001')
@@ -278,7 +295,7 @@ def new_pass():
 @app.route('/forgot_password')
 def forgot_pass():
     user = Admin.query.filter_by(username='spider-man').first()
-    return render_template('forgot_password.html', user=user)
+    return render_template('forgot_password.html', user=user, name=current_user.username)
 
 @app.route('/send_new_pass', methods=['POST','GET'])
 def send_pass():
@@ -292,8 +309,49 @@ def send_pass():
     return render_template('forgot_password.html', user=user)
 
 
+@app.route('/groups', methods=['GET'])
+def groups():
+    groups = Grp.query.all()
+    return render_template('groups.html', groups=groups, name=current_user.username)
+
+@app.route('/save_group', methods=['POST'])
+def sg():
+    if 'id' in request.form:
+        id = request.form['id']
+        group = Grp.query.get(id)
+    else:
+        group = Grp(request.form['id_plan'],request.form['name'])
+
+    group.name = request.form['name']
+    group.id_plan = request.form['id_plan']
+
+    db.session.add(group)
+    db.session.commit()
+
+    return redirect(url_for('groups'))
 
 
+@app.route('/edit_group/<id>')
+@login_required
+def eg(id):
+    student = Student.query.all()
+    group = Grp.query.get(id)
+    return render_template('group_form.html', student=student, group=group, name=current_user.username)
+
+
+@app.route('/add_grp')
+@login_required
+def ag():
+    return render_template('group_form.html', name=current_user.username)
+
+
+@app.route('/del_group',methods=['POST'])
+def delg():
+    id = request.form['id']
+    group = Grp.query.get(id)
+    db.session.delete(group)
+    db.session.commit()
+    return redirect(url_for('groups'))
 
 
 

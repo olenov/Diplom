@@ -2,6 +2,7 @@
 {% block title %}Главная{% endblock %}
 {% block content %}
 <h3>Результаты поиска</h3>
+{% if not groups and students%}
 <table class="table">
   <thead>
     <tr>
@@ -81,9 +82,63 @@
   </div>
     </tr>
   {% endfor %}
+  {% endif %}
+  {% if groups and not students%}
+  <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Название группы</th>
+      <th scope="col">ID плана</th>
+        </tr>
+  </thead>
+    <tbody>
+  {% for group in groups %}
+  <tr>
+      <td><a href="/stud_in_grp/{{ group.id }}">{{ group.name }}</a></td>
+      <td>{{ group.id_plan }}</td>
+       <td><a href="/edit_group/{{ group.id }}"><button class="btn btn-primary"><svg id="i-edit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z" />
+</svg></button></a></td>
+      <td> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal1">
+    <svg id="i-trash" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M28 6 L6 6 8 30 24 30 26 6 4 6 M16 12 L16 24 M21 12 L20 24 M11 12 L12 24 M12 6 L13 2 19 2 20 6" />
+</svg>
+  </button></td>
+  </tr>
+<!-- The Modal -->
+  <div class="modal" id="myModal1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Вы уверены, что хотите удалить группу {{ group.name }}?</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <!-- Modal body -->
+
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <form method="post" action="/del_group">
+                <input type="hidden" name="id" value="{{ group.id }}">
+                <button class="btn btn-danger" type="submit">Да</button>
+            <button action="/search_results" type="button" class="btn btn-danger" data-dismiss="modal">Нет</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+    </tr>
+  {% endfor %}
 
   </tbody>
 </table>
-
+{% endif %}
+  {% if not students and not groups %}
+  Ничего не найдено
+  {% endif %}
 {% endblock %}
 

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}
+{% if group %}
+  Редактирование данных группы {{ group.name }}
+  {% else %}
+  Добавление новой группы
+  {% endif %}
+{% endblock %}
+{% block content %}
+<h2>
+  {% if group %}
+  Редактирование данных группы {{ group.name }}
+  {% else %}
+  Добавление новогой группы
+  {% endif %}</h2>
+<style>
+  .form-control{
+    width: 25%;
+    margin-left:40px
+  }
+  label{
+  padding-left:40px;
+  }
+
+</style>
+</form>
+<form action="{{ url_for('sg') }}" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        {% if group %} <input value="{{group.id}}" name="id" type="hidden"> {% endif %}
+    <label for="formGroupExampleInput">{% if group %}Название группы{% endif %}</label>
+    <input type="text" name="name" class="form-control" id="formGroupExampleInput" {% if group %}value="{{ group.name }}"{% else %}placeholder="ID плана"{% endif %}>
+  </div>
+    <div class="form-group">
+    <label for="formGroupExampleInput1">{% if group %}ID плана{% endif %}</label>
+    <input type="text" name="id_plan" class="form-control" id="formGroupExampleInput1" {% if group %}value="{{ group.id_plan }}"{% else %}placeholder="ID плана"{% endif %}>
+  </div>
+    <input type="submit" class="btn btn-primary" value="Подтвердить">
+    <button type="cancel" class="btn btn-primary">Отмена</button>
+</form>
+
+
+</body>
+</html>
+{% endblock %}
