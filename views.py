@@ -220,7 +220,7 @@ def ofd():
     if filename == '':
         return redirect(url_for('main'))
     else:
-        wb_val = load_workbook(filename = filename)
+        wb_val = load_workbook(filename = destination)
         sheet_val = wb_val['students']
         for i in range(1,20):
             student = Student(sheet_val['F'+str(i)].value, sheet_val['E'+str(i)].value, sheet_val['G'+str(i)].value, '', '', '','','','','','','','','','','','','','','',None,0,'')
@@ -229,18 +229,9 @@ def ofd():
         return redirect(url_for('main'))
 
 
-@app.route("/upload", methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        return jsonify({"result": request.get_array(field_name='file')})
-    return '''
-    <!doctype html>
-    <title>Upload an excel file</title>
-    <h1>Excel file upload (csv, tsv, csvz, tsvz only)</h1>
-    <form action="" method=post enctype=multipart/form-data><p>
-    <input type=file name=file><input type=submit value=Upload>
-    </form>
-    '''
+@app.route("/openfiledialogpage", methods=['GET', 'POST'])
+def ofdp():
+    return render_template('openfiledialogpage.html')
 
 @app.route('/report_generation')
 def generation():
