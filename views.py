@@ -1,5 +1,7 @@
-from flask import render_template, request, redirect, url_for, session, send_from_directory, flash, jsonify
 from main import *
+from models import *
+
+from flask import render_template, request, redirect, url_for, session, send_from_directory, flash, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from urllib.parse import urlparse, urljoin
@@ -11,9 +13,7 @@ from openpyxl import load_workbook
 from flask_mail import Message
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    return Admin.query.get(int(user_id))
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
@@ -23,7 +23,7 @@ def is_safe_url(target):
 
 class LoginForm(FlaskForm):
     username = StringField('Имя пользователя', validators=[InputRequired(),Length(min=4,max=15)])
-    password = PasswordField('Пароль',validators=[InputRequired(),Length(min=4,max=80)])
+    password = PasswordField('Пароль',validators=[InputRequired(),Length(min=4, max=80)])
 
 class RegisterForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
@@ -31,29 +31,18 @@ class RegisterForm(FlaskForm):
     password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
 
 
-@app.route('/')
-def home():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-    else:
-        return redirect(url_for('main'))
-
 @app.route('/login', methods=['GET','POST'])
 def login():
     error = None
     form = LoginForm()
     if form.validate_on_submit():
+        error = 'Неверное имя пользователя или пароль'
         user = Admin.query.filter_by(username=form.username.data).first()
         if user:
             print(user)
             if check_password_hash(user.password, form.password.data):
                 login_user(user)
                 return redirect(url_for('main'))
-            else:
-                error = 'incorrect password or login'
-        return redirect(url_for('login'))
-       #return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
-    print(form)
     return render_template('login.html', form=form, error=error)
 
 
@@ -83,7 +72,7 @@ if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0', port=4000)
 
 
-@app.route('/main', methods=['GET'])
+@app.route('/', methods=['GET'])
 @login_required
 def main():
     page =  request.args.get('page')
@@ -192,7 +181,8 @@ def show_results():
         page = int(page)
     else:
         page = 1
-    return render_template('serchres.html',students=students, pages=pages, name=current_user.username, groups=groups)
+    pages = students.paginate(page=page, per_page=5)
+    return render_template('serchres.html', students=students, pages=pages, name=current_user.username, groups=groups)
 
 @app.route('/stud_in_grp/<id>')
 def ssig(id):
@@ -370,3 +360,6 @@ def delg():
     db.session.delete(group)
     db.session.commit()
     return redirect(url_for('groups'))
+
+
+print('VIEWS:', app.root_path)

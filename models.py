@@ -42,6 +42,7 @@ class Student(db.Model):
     grp_id = db.Column(db.Integer, db.ForeignKey('grp.id'))
     id_People = db.Column(db.Integer)
     social_web_profile = db.Column(db.String(100))
+
     def __init__(self, name, surname, patronymic, birth_place, birth_date, registration_adress, basic_education,
                  full_names_of_parents_work_place_phone_number, financial_situation, temporary_adress, phone_number, hobbies_and_interests,
                  work_place, INN, passport_data, SNILS, year_of_issue, diploma_with_distinction, diploma_number, image, grp_id, id_People, social_web_profile):

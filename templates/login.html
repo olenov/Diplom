@@ -23,11 +23,14 @@
     }
 </style>
     <div class="container">
-
-    <p class=error><strong>Error:</strong> {{ error }}
-
       <form class="form-signin" method="POST" action="/login">
         <h2 class="form-signin-heading">Войдите в учетную запись</h2>
+        {% if error %}
+        <div class="alert alert-error">
+            <a class="close" data-dismiss="alert" href="#">x</a>
+            {{ error }}
+        </div>
+        {% endif %}
         {{ form.hidden_tag() }}
         {{ wtf.form_field(form.username) }}
         {{ wtf.form_field(form.password) }}
@@ -37,7 +40,4 @@
 
     </div> <!-- /container -->
 <a href="/forgot_password"></a>
-{% if k==False %}
-<h5>Password or login is incorrect</h5>
-{% endif %}
 {% endblock %}
