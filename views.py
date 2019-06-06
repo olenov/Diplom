@@ -1,10 +1,9 @@
 from flask import render_template, request, redirect, url_for, session, send_from_directory
-from app import *
+from main import *
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from urllib.parse import urlparse, urljoin
 import os
-from sqlalchemy import create_engine
 from flask_login import login_user, login_required, logout_user, current_user
 from wtforms.validators import InputRequired, Email, Length
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -16,7 +15,10 @@ import random
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 
-engine = create_engine('postgres://sql:1@localhost/Students', echo=True)
+@login_manager.user_loader
+def load_user(user_id):
+    return Admin.query.get(int(user_id))
+
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
@@ -47,6 +49,7 @@ def login():
     if form.validate_on_submit():
         user = Admin.query.filter_by(username=form.username.data).first()
         if user:
+            print(user)
             if check_password_hash(user.password, form.password.data):
                 login_user(user)
                 return redirect(url_for('main'))
