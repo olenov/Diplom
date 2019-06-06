@@ -1,24 +1,19 @@
-from flask import render_template, request, redirect, url_for, session, send_from_directory
+from flask import render_template, request, redirect, url_for, session, send_from_directory, flash, jsonify
 from main import *
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from urllib.parse import urlparse, urljoin
-import os
+import os, xlsxwriter, string, random
 from flask_login import login_user, login_required, logout_user, current_user
 from wtforms.validators import InputRequired, Email, Length
 from werkzeug.security import generate_password_hash, check_password_hash
 from openpyxl import load_workbook
-import xlsxwriter
 from flask_mail import Message
-import string
-import random
-from tkinter import Tk
-from tkinter.filedialog import askopenfilename
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return Admin.query.get(int(user_id))
-
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
@@ -45,6 +40,7 @@ def home():
 
 @app.route('/login', methods=['GET','POST'])
 def login():
+    error = None
     form = LoginForm()
     if form.validate_on_submit():
         user = Admin.query.filter_by(username=form.username.data).first()
@@ -53,10 +49,12 @@ def login():
             if check_password_hash(user.password, form.password.data):
                 login_user(user)
                 return redirect(url_for('main'))
+            else:
+                error = 'incorrect password or login'
         return redirect(url_for('login'))
-        #return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
+       #return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
     print(form)
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, error=error)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -69,7 +67,7 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
 
-        return '<h1>New user has been created!</h1>'
+        return redirect(url_for('main'))
         #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
 
     return render_template('signup.html', form=form)
@@ -206,23 +204,40 @@ def ssig(id):
 def reg():
     return render_template('registration.html')
 
-@app.route('/openfiledialog')
+@app.route('/openfiledialog', methods=['POST','GET'])
 def ofd():
-    root = Tk()
-    ftypes = [('excel file',"*.xlsx")]
-    ttl  = "Title"
-    dir1 = 'C:\\'
-    root.fileName = askopenfilename(filetypes = ftypes, initialdir = dir1, title = ttl)
-    if not root.fileName:
+    target = os.path.join(APP_ROOT, 'static/')
+    if request.files.getlist("file"):
+        z = request.files.getlist("file")[0]
+        filename = z.filename
+        destination = "/".join([target, filename])
+        z.save(destination)
+    else:
+        filename = ''
+    if filename == '':
         return redirect(url_for('main'))
     else:
-        wb_val = load_workbook(filename = root.fileName)
+        wb_val = load_workbook(filename = filename)
         sheet_val = wb_val['students']
         for i in range(1,20):
             student = Student(sheet_val['F'+str(i)].value, sheet_val['E'+str(i)].value, sheet_val['G'+str(i)].value, '', '', '','','','','','','','','','','','','','','',None,0,'')
             db.session.add(student)
             db.session.commit()
         return redirect(url_for('main'))
+
+
+@app.route("/upload", methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        return jsonify({"result": request.get_array(field_name='file')})
+    return '''
+    <!doctype html>
+    <title>Upload an excel file</title>
+    <h1>Excel file upload (csv, tsv, csvz, tsvz only)</h1>
+    <form action="" method=post enctype=multipart/form-data><p>
+    <input type=file name=file><input type=submit value=Upload>
+    </form>
+    '''
 
 @app.route('/report_generation')
 def generation():
@@ -298,7 +313,7 @@ def new_pass():
 @app.route('/forgot_password')
 def forgot_pass():
     user = Admin.query.filter_by(username='spider-man').first()
-    return render_template('forgot_password.html', user=user, name=current_user.username)
+    return render_template('forgot_password.html', user=user)
 
 @app.route('/send_new_pass', methods=['POST','GET'])
 def send_pass():
@@ -355,7 +370,3 @@ def delg():
     db.session.delete(group)
     db.session.commit()
     return redirect(url_for('groups'))
-
-
-
-

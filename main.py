@@ -8,6 +8,7 @@ from flask_script import Manager
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
+import flask_excel as excel
 import os
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -21,6 +22,8 @@ bootstrap = Bootstrap(app)
 db.init_app(app)
 
 mail = Mail(app)
+
+excel.init_excel(app)
 
 migrate = Migrate(app,db)
 manager = Manager(app)
