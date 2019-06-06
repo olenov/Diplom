@@ -13,7 +13,7 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://sql:1@localhost/Students'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://sql:1@localhost/Students2'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 app.config['WHOOSH_BASE'] = 'whoosh'
 app.config['MAIL_SERVER'] =  'smtp.gmail.com'
