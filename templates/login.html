@@ -23,14 +23,16 @@
     }
 </style>
     <div class="container">
-      <form class="form-signin" method="POST" action="/login">
-        <h2 class="form-signin-heading">Войдите в учетную запись</h2>
-        {% if error %}
-        <div class="alert alert-error">
-            <a class="close" data-dismiss="alert" href="#">x</a>
+
+    {% if error %}
+        <div class="alert alert-warning" role="alert">
+
             {{ error }}
         </div>
         {% endif %}
+
+      <form class="form-signin" method="POST" action="/login">
+        <h2 class="form-signin-heading">Войдите в учетную запись</h2>
         {{ form.hidden_tag() }}
         {{ wtf.form_field(form.username) }}
         {{ wtf.form_field(form.password) }}

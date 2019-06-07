@@ -39,6 +39,7 @@
   <tbody>
   {% for student in pages.items %}
   <tr>
+      <input type="hidden" name="id" value="{{ student.id }}">
       <td>{{ student.surname }}</td>
       <td>{{ student.name }}</td>
       <td>{{ student.patronymic }}</td>
@@ -86,9 +87,8 @@
         <!-- Modal footer -->
         <div class="modal-footer">
           <form method="post" action="/del_yes">
-                <input type="hidden" name="id" value="{{ student.id }}">
                 <button class="btn btn-danger" type="submit">Да</button>
-            <button action="/main" type="button" class="btn btn-danger" data-dismiss="modal">Нет</button>
+            <button action="/" type="button" class="btn btn-danger" data-dismiss="modal">Нет</button>
           </form>
         </div>
 
@@ -107,7 +107,7 @@
         <a class="page-link" href="main?page={{ pages.prev_num }}">Назад</a></li>
     {% for page in pages.iter_pages() %}
       <li {% if page == pages.page %} class="page-item active" {% endif %}>
-          <a class="page-link" href="main?page={{ page }}">{{ page }}</a></li>
+          <a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
       {% endfor %}
     <li {% if not pages.has_next %} class="page-item disabled" {% endif %}>
       <a class="page-link" href="main?page={{ pages.next_num }}">Вперед</a></li>

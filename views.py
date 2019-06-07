@@ -12,7 +12,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from openpyxl import load_workbook
 from flask_mail import Message
 
-
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 def is_safe_url(target):
