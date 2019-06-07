@@ -40,7 +40,7 @@
   {% for student in pages.items %}
   <tr>
       <input type="hidden" name="id" value="{{ student.id }}">
-      <td>{{ student.image}}</td>
+      <td>{{ student.surname }}</td>
       <td>{{ student.name }}</td>
       <td>{{ student.patronymic }}</td>
       <td>{{ student.birth_place }}</td>
@@ -101,16 +101,16 @@
   </tbody>
 </table>
 
-<nav aria-label="Page navigation example">
+<nav>
   <ul class="pagination">
     <li {% if not pages.has_prev %} class="page-item disabled" {% endif %}>
-        <a class="page-link" href="?page={{ pages.prev_num }}">Назад</a></li>
+        <a class="page-link" href="{{ url_for('main') }}?page={{ pages.prev_num }}">Назад</a></li>
     {% for page in pages.iter_pages() %}
       <li {% if page == pages.page %} class="page-item active" {% endif %}>
-          <a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+          <a class="page-link" href="{{ url_for('main') }}?page={{ page }}">{{ page }}</a></li>
       {% endfor %}
     <li {% if not pages.has_next %} class="page-item disabled" {% endif %}>
-      <a class="page-link" href="?page={{ pages.next_num }}">Вперед</a></li>
+      <a class="page-link" href="{{ url_for('main') }}?page={{ pages.next_num }}">Вперед</a></li>
   </ul>
 </nav>
 {% endblock %}

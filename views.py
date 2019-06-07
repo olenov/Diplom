@@ -147,7 +147,7 @@ def save():
 
 @app.route('/add')
 @login_required
-def adding():
+def add_student():
     return render_template('student_form.html', name=current_user.username)
 
 @app.route('/deleta',methods=['POST'])
