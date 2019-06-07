@@ -47,16 +47,13 @@ def login():
     error = None
     form = LoginForm()
     if form.validate_on_submit():
+        error = 'Неверное имя пользователя или пароль'
         user = Admin.query.filter_by(username=form.username.data).first()
         if user:
+            print(user)
             if check_password_hash(user.password, form.password.data):
                 login_user(user)
                 return redirect(url_for('main'))
-            else:
-                error = 'incorrect password or login'
-        return redirect(url_for('login'))
-       #return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
-    print(form)
     return render_template('login.html', form=form, error=error)
 
 
