@@ -1,23 +1,19 @@
+from main import *
+from models import *
+
 from flask import render_template, request, redirect, url_for, session, send_from_directory, flash, jsonify
-from app import *
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from urllib.parse import urlparse, urljoin
-import os
-from sqlalchemy import create_engine
+import os, xlsxwriter, string, random
 from flask_login import login_user, login_required, logout_user, current_user
 from wtforms.validators import InputRequired, Email, Length
 from werkzeug.security import generate_password_hash, check_password_hash
 from openpyxl import load_workbook
-import xlsxwriter
 from flask_mail import Message
-import string
-import random
-import flask_excel as excel
 
-excel.init_excel(app)
 
-engine = create_engine('postgres://sql:1@localhost/Students2', echo=True)
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
@@ -27,20 +23,13 @@ def is_safe_url(target):
 
 class LoginForm(FlaskForm):
     username = StringField('Имя пользователя', validators=[InputRequired(),Length(min=4,max=15)])
-    password = PasswordField('Пароль',validators=[InputRequired(),Length(min=4,max=80)])
+    password = PasswordField('Пароль',validators=[InputRequired(),Length(min=4, max=80)])
 
 class RegisterForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
     username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
     password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
 
-
-@app.route('/')
-def home():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-    else:
-        return redirect(url_for('main'))
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -83,7 +72,7 @@ if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0', port=4000)
 
 
-@app.route('/main', methods=['GET'])
+@app.route('/', methods=['GET'])
 @login_required
 def main():
     page =  request.args.get('page')
@@ -192,7 +181,8 @@ def show_results():
         page = int(page)
     else:
         page = 1
-    return render_template('serchres.html',students=students, pages=pages, name=current_user.username, groups=groups)
+    pages = students.paginate(page=page, per_page=5)
+    return render_template('serchres.html', students=students, pages=pages, name=current_user.username, groups=groups)
 
 @app.route('/stud_in_grp/<id>')
 def ssig(id):
@@ -363,5 +353,4 @@ def delg():
     return redirect(url_for('groups'))
 
 
-
-
+print('VIEWS:', app.root_path)
