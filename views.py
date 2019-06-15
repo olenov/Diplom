@@ -1,6 +1,7 @@
 from main import *
 from models import *
 
+from flask_mail import Mail
 from flask import render_template, request, redirect, url_for, session, send_from_directory, flash, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
@@ -12,6 +13,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from openpyxl import load_workbook
 from flask_mail import Message
 import xlsxwriter
+import os
+mail = Mail(app)
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,6 +23,10 @@ def is_safe_url(target):
     test_url = urlparse(urljoin(request.host_url, target))
     return test_url.scheme in ('http', 'https') and \
            ref_url.netloc == test_url.netloc
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 class LoginForm(FlaskForm):
     username = StringField('Имя пользователя', validators=[InputRequired(),Length(min=4,max=15)])
@@ -61,6 +68,7 @@ def signup():
 
     return render_template('signup.html', form=form)
 
+
 @app.route("/logout")
 @login_required
 def logout():
@@ -80,7 +88,7 @@ def main():
         page =  int(page)
     else:
         page = 1
-    students = Student.query
+    students = Student.query.order_by(Student.date_in.desc(), Student.surname)
 
     pages = students.paginate(page=page, per_page=5)
     return render_template('main.html', students=students.all(), pages=pages, name=current_user.username)
@@ -90,54 +98,76 @@ def main():
 @login_required
 def save():
     target = os.path.join(APP_ROOT, 'static/')
-    if request.files.getlist("file"):
-        z = request.files.getlist("file")[0]
-        z.filename = request.form['name'] +' ' + request.form['surname']
-        filename = z.filename
+    if request.files.getlist("image"):
+        z = request.files.getlist("image")[0]
+        z.filename = request.form['name'] +' ' + request.form['surname'] + request.form['id_people']
+        randomm = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        filename = str(z.filename)
         destination = "/".join([target, filename])
         z.save(destination)
+        f = '/static/' + filename
     else:
-        filename = ''
+        destination = ''
+        f = ''
     if 'id' in request.form:
         id = request.form['id']
         student = Student.query.get(id)
     else:
-        student = Student(request.form['name'], request.form['surname'], request.form['patronymic'],request.form['birth_place'],request.form['birth_place'],
-                          request.form['registration_adress'],request.form['basic_education'],request.form['full_names_of_parents_work_place_phone_number'],
-                          request.form['financial_situation'],request.form['temporary_adress'], request.form['phone_number'], request.form['work_place'],
-                          request.form['INN'],request.form['passport_data'], request.form['SNILS'], request.form['SNILS'], request.form['year_of_issue'],
-                          request.form['diploma_with_distinction'] , request.form['diploma_number'], '/static/' + filename, request.form['grp_id'], request.form['id_People'], request.form['social_web_profile'])
+        student = Student(name=request.form['name'],
+                          surname=request.form['surname'],
+                          patronymic=request.form['patronymic'],
+                          birth_date=request.form['birth_date'],
+                          birth_place=request.form['birth_place'],
+                          image=destination,
+                          grp_id=request.form['grp_id'],
+                          id_people=request.form['id_people'],
+                          social_web_profile=request.form['social_web_profile'],
+                          thesis_topic=request.form['thesis_topic'],
+                          advisor=request.form['advisor'],
+                          date_of_defense=request.form['date_of_defense'],
+                          date_of_discharge=request.form['date_of_discharge'],
+                          reason_of_discharge=request.form['reason_of_discharge'],
+                          sex=request.form['sex'],
+                          id_nationality=request.form['id_nationality'],
+                          old_surname=request.form['old_surname'],
+                          old_name=request.form['old_name'],
+                          old_patronymic=request.form['old_patronymic'],
+                          date_in=request.form['date_in'])
         print(student)
 
     student.name = request.form['name']
     student.surname = request.form['surname']
     student.patronymic = request.form['patronymic']
     student.birth_place = request.form['birth_place']
-    student.birth_date = request.form['birth_date']
-    student.registration_adress = request.form['registration_adress']
-    student.basic_education = request.form['basic_education']
-    student.full_names_of_parents_work_place_phone_number = request.form['full_names_of_parents_work_place_phone_number']
-    student.financial_situation = request.form['financial_situation']
-    student.temporary_adress = request.form['temporary_adress']
-    student.phone_number = request.form['phone_number']
-    student.hobbies_and_interests = request.form['hobbies_and_interests']
-    student.work_place = request.form['work_place']
-    student.INN = request.form['INN']
-    student.passport_data = request.form['passport_data']
-    student.SNILS = request.form['SNILS']
-    student.year_of_issue = request.form['year_of_issue']
-    student.diploma_with_distinction = request.form['diploma_with_distinction']
-    student.diploma_number = request.form['diploma_number']
-    student.image = '/static/' + filename
-    if request.form['grp_id']:
-        student.grp_id = request.form['grp_id']
+    if request.form['birth_date'] == '':
+        student.birth_date = None
     else:
-        student.grp_id = None
-    if request.form['id_People']:
-        student.id_People = request.form['id_People']
-    else:
-        student.id_People = None
+        student.birth_date = request.form['birth_date']
+    student.grp_id = request.form['grp_id']
     student.social_web_profile = request.form['social_web_profile']
+    student.thesis_topic = request.form['thesis_topic']
+    student.advisor = request.form['advisor']
+    if request.form['date_of_defense'] == '':
+        student.date_of_defense = None
+    else:
+        student.date_of_defense = request.form['date_of_defense']
+    if request.form['date_of_discharge'] == '':
+        student.date_of_discharge = None
+    else:
+        student.date_of_discharge = request.form['date_of_discharge']
+    student.reason_of_discharge = request.form['reason_of_discharge']
+    student.sex = request.form['sex']
+    student.id_nationality = request.form['id_nationality']
+    student.old_surname = request.form['old_surname']
+    student.old_name = request.form['old_name']
+    student.old_patronymic = request.form['old_patronymic']
+    if request.form['date_in'] == '':
+        student.date_in = None
+    else:
+        student.date_in = request.form['date_in']
+    student.image = f
+    student.grp_id = request.form['grp_id']
+    student.id_People = request.form['id_people']
 
     db.session.add(student)
     db.session.commit()
@@ -148,13 +178,9 @@ def save():
 @app.route('/add')
 @login_required
 def add_student():
-    return render_template('student_form.html', name=current_user.username)
+    groups = Grp.query.all()
+    return render_template('student_form.html', groups=groups, name=current_user.username)
 
-@app.route('/deleta',methods=['POST'])
-def delete():
-    id = request.form['id']
-    student = Student.query.get(id)
-    return render_template('deleta.html', student=student, name=current_user.username)
 
 @app.route('/del_yes',methods=['POST'])
 def delet():
@@ -164,35 +190,34 @@ def delet():
     db.session.commit()
     return redirect(url_for('main'))
 
+
 @app.route('/edit/<id>')
 @login_required
 def edit(id):
     student = Student.query.get(id)
-    group = Grp.query.all()
-    return render_template('student_form.html', student=student, group=group, name=current_user.username)
+    groups = Grp.query.all()
+    return render_template('student_form.html', student=student, groups=groups, name=current_user.username)
+
 
 @app.route('/search_results',methods=['POST'])
 def show_results():
     search_word = request.form['word']
     students = Student.query.whoosh_search(search_word).all()
     groups = Grp.query.whoosh_search(search_word).all()
-    page = request.args.get('page')
-    if page and page.isdigit():
-        page = int(page)
-    else:
-        page = 1
-    pages = students.paginate(page=page, per_page=5)
-    return render_template('serchres.html', students=students, pages=pages, name=current_user.username, groups=groups)
+    return render_template('serchres.html', students=students, name=current_user.username, groups=groups)
+
 
 @app.route('/stud_in_grp/<id>')
 def ssig(id):
     grp = Grp.query.get(id)
     students = grp.students.all()
-    return render_template('stofgrp.html', students=students, name=current_user.username)
+    return render_template('stofgrp.html', students=students, name=current_user.username, grp=grp)
+
 
 @app.route('/registration',methods=['POST'])
 def reg():
     return render_template('registration.html')
+
 
 @app.route('/openfiledialog', methods=['POST','GET'])
 def ofd():
@@ -207,10 +232,44 @@ def ofd():
     if filename == '':
         return redirect(url_for('main'))
     else:
-        wb_val = load_workbook(filename = destination)
-        sheet_val = wb_val['students']
-        for i in range(1,20):
-            student = Student(sheet_val['F'+str(i)].value, sheet_val['E'+str(i)].value, sheet_val['G'+str(i)].value, '', '', '','','','','','','','','','','','','','','',None,0,'')
+        wb = load_workbook(filename = destination)
+        sheet = wb['students']
+        groups = {g.name: g for g in Grp.query.all()}
+        count = 0
+        for row in sheet.rows:
+            if count == 0:
+                count = 1
+                continue
+            groupname = row[1].value
+            if groupname not in groups:
+                g = Grp(id=row[0].value, id_plan=row[2].value, name=groupname)
+                db.session.add(g)
+                db.session.commit()
+                groups[groupname] = g
+            else:
+                g = groups[groupname]
+            s = row[8]
+            if s.value == 'NULL':
+                s.value=None
+            student = Student(name= row[5].value,
+                              surname= row[4].value,
+                              patronymic= row[6].value,
+                              birth_date= row[13].value,
+                              birth_place= row[14].value,
+                              grp_id=g.id,
+                              id_people= row[3].value,
+                              sex=row[12].value,
+                              id_nationality= row[15].value,
+                              old_surname= row[9].value ,
+                              old_name= row[10].value,
+                              old_patronymic= row[11].value,
+                              date_in= row[7].value,
+                              date_of_discharge = s.value,
+                              advisor = '',
+                              thesis_topic = '',
+                              social_web_profile = '',
+                              reason_of_discharge = row[16].value,
+                              )
             db.session.add(student)
             db.session.commit()
         return redirect(url_for('main'))
@@ -218,12 +277,12 @@ def ofd():
 
 @app.route("/openfiledialogpage", methods=['GET', 'POST'])
 def ofdp():
-    return render_template('openfiledialogpage.html')
+    return render_template('openfiledialogpage.html', name=current_user.username)
+
 
 @app.route('/report_generation')
 def generation():
     return render_template('report_generation.html', name=current_user.username)
-
 
 
 @app.route('/report_generate',methods=['POST','GET'])
@@ -279,22 +338,26 @@ def generate():
     workbook.close()
     return send_from_directory('C:\\Users\\Константин\\PycharmProjects\\blog','Отчет о выпускниках.xlsx')#redirect(url_for('main'))
 
+
 @app.route('/change_password')
 def change_pass():
     user = current_user
     return render_template('change_password.html', user=user, name=user.username, b=current_user.password)
+
 
 @app.route('/new_pass', methods=['POST','GET'])
 def new_pass():
     if check_password_hash(current_user.password, request.form['old_password']) :
         current_user.password = generate_password_hash(request.form['new_password'], method='sha256')
     db.session.commit()
-    return render_template('change_password.html', user=current_user,a=generate_password_hash (request.form['old_password']))
+    return render_template('change_password.html', user=current_user.username,a=generate_password_hash (request.form['old_password']))
+
 
 @app.route('/forgot_password')
 def forgot_pass():
     user = Admin.query.filter_by(username='spider-man').first()
     return render_template('forgot_password.html', user=user)
+
 
 @app.route('/send_new_pass', methods=['POST','GET'])
 def send_pass():
@@ -313,13 +376,14 @@ def groups():
     groups = Grp.query.all()
     return render_template('groups.html', groups=groups, name=current_user.username)
 
+
 @app.route('/save_group', methods=['POST'])
 def sg():
     if 'id' in request.form:
         id = request.form['id']
         group = Grp.query.get(id)
     else:
-        group = Grp(request.form['id_plan'],request.form['name'])
+        group = Grp(id_plan=request.form['id_plan'],name=request.form['name'])
 
     group.name = request.form['name']
     group.id_plan = request.form['id_plan']

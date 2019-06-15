@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block title %}
 {% if student %}
   Редактирование данных студента {{ student.name }} {{ student.surname }}
@@ -6,40 +7,24 @@
   Добавление нового студента
   {% endif %}
 {% endblock %}
-{% block content %}
+
+{% block extrahead %}
+<style>
+  img.studentimage {border: solid silver 1px;}
+</style>
+{% endblock %}
+
+{% block maincol %}
+<form action="{{ url_for('save') }}" method="post" enctype="multipart/form-data">
+<div class="col-sm">
 <h2>
   {% if student %}
   Редактирование данных студента {{ student.name }} {{ student.surname }}
   {% else %}
   Добавление нового студента
-  {% endif %}</h2>
-<style>
-  .form-control{
-    width: 25%;
-    margin-left:40px
-  }
-  label{
-  padding-left:40px;
-  }
-
-</style>
-</form>
-<form action="{{ url_for('save') }}" method="post" enctype="multipart/form-data">
-  <div class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <svg id="i-user" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-    <path d="M22 11 C22 16 19 20 16 20 13 20 10 16 10 11 10 6 12 3 16 3 20 3 22 6 22 11 Z M4 30 L28 30 C28 21 22 20 16 20 10 20 4 21 4 30 Z" />
-</svg>{{ name }}
-  </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-    <a class="dropdown-item" href="change_password">Сменить пароль</a>
-    <a class="dropdown-item" href="/logout"><svg id="i-signout" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-    <path d="M28 16 L8 16 M20 8 L28 16 20 24 M11 28 L3 28 3 4 11 4" />
-</svg></a>
-  </div>
-</div>
-  <input id="file-picker" type="file" name="file" accept="image/*" multiple>
-  {% if student %}{% if student.image %} <img src="{{ student.image }}" width="100" height="100"> {% endif %}{% endif %}
-<div id="msg"></div>
+  {% endif %}
+</h2>
+  <div id="msg"></div>
   {% if student %} <input value="{{student.id}}" name="id" type="hidden"> {% endif %}
   <div class="form-group">
     <label for="surname">{% if student %}Фамилия{% endif %}</label>
@@ -53,87 +38,83 @@
     <label for="patronymic">{% if student %}Отчество{% endif %}</label>
     <input type="text" name="patronymic" class="form-control" id="patronymic" {% if student %}value="{{ student.patronymic }}"{% else %}placeholder="Отчество"{% endif %}>
   </div>
+  <div class="formgroup">
+    <input id="file-picker" type="file" name="image" accept="image/*" multiple>
+    {% if student %}{% if student.image %}<img class="studentimage" src="{{ student.image }}" width="100" height="100"> {% endif %}{% endif %}
+  </div>
   <div class="form-group">
     <label for="birth_place">{% if student %}Место рождения{% endif %}</label>
     <input type="text" name="birth_place" class="form-control" id="birth_place" {% if student %}value="{{ student.birth_place }}"{% else %}placeholder="Место рождения"{% endif %}>
   </div>
   <div class="form-group">
-    <label for="formGroupExampleInput6">{% if student %}Дата рождения{% endif %}</label>
-    <input type="text" name="birth_date" class="form-control" id="formGroupExampleInput6" {% if student %}value="{{ student.birth_date }}"{% else %}placeholder="Дата рождения"{% endif %}>
+    <label for="formGroupExampleInput6">Дата рождения</label>
+    <input type="date" name="birth_date"  id="formGroupExampleInput6" min="1970-01-01" {% if student %}value="{{ student.birth_date }}"{% else %}placeholder="Дата рождения"{% endif %}>
   </div>
   <div class="form-group">
-    <label for="formGroupExampleInput7">{% if student %}Адрес прописки{% endif %}</label>
-    <input type="text" name="registration_adress" class="form-control" id="formGroupExampleInput7" {% if student %}value="{{ student.registration_adress }}"{% else %}placeholder="Адрес прописки"{% endif %}>
+    <select name="grp_id">
+      {% for g in groups %}
+        {% if student.grp_id == 0 %}<option  value="{{ g.id }}" {% if g.name=="неизвестно" %}selected{% endif %}>{{ g.name }}</option>{% endif %}
+        {% if student.grp_id != 0 %}<option  value="{{ g.id }}" {% if g.id==student.grp_id %}selected{% endif %}>{{ g.name }}</option>{% endif %}
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="formGroupExampleInput8">{% if student %}ID people{% endif %}</label>
+    <input type="text" name="id_people" class="form-control" id="formGroupExampleInput8" {% if student %}value="{{ student.id_people }}"{% else %}placeholder="ID people"{% endif %}>
   </div>
   <div class="form-group">
-    <label for="formGroupExampleInput8">{% if student %}Базовое образование{% endif %}</label>
-    <input type="text" name="basic_education" class="form-control" id="formGroupExampleInput8" {% if student %}value="{{ student.basic_education }}"{% else %}placeholder="Базовое образование"{% endif %}>
+    <label for="formGroupExampleInput9">{% if student %}Профили соцсетей{% endif %}</label>
+    <input type="text" name="social_web_profile" class="form-control" id="formGroupExampleInput9" {% if student %}value="{{ student.social_web_profile }}"{% else %}placeholder="Профили соцсетей"{% endif %}>
+  </div>
+</div>
+<div class="col-sm">
+  <div class="form-group">
+    <label for="formGroupExampleInput10">{% if student %}Тема дипломной работы{% endif %}</label>
+    <input type="text" name="thesis_topic" class="form-control" id="formGroupExampleInput10" {% if student %}value="{{ student.thesis_topic }}"{% else %}placeholder="Тема дипломной работы"{% endif %}>
   </div>
   <div class="form-group">
-    <label for="formGroupExampleInput9">{% if student %}ФИО родителей, место работы, номера телефонов{% endif %}</label>
-    <input type="text" name="full_names_of_parents_work_place_phone_number" class="form-control" id="formGroupExampleInput9" {% if student %}value="{{ student.full_names_of_parents_work_place_phone_number }}"{% else %}placeholder="ФИО родителей, место работы, номера телефонов"{% endif %}>
+    <label for="formGroupExampleInput11">{% if student %}Научный руководитель{% endif %}</label>
+    <input type="text" name="advisor" class="form-control" id="formGroupExampleInput11" {% if student %}value="{{ student.advisor }}"{% else %}placeholder="Научный руководитель"{% endif %}>
   </div>
   <div class="form-group">
-    <label for="formGroupExampleInput10">{% if student %}Финансовое положение{% endif %}</label>
-    <input type="text" name="financial_situation" class="form-control" id="formGroupExampleInput10" {% if student %}value="{{ student.financial_situation }}"{% else %}placeholder="Финансовое положение"{% endif %}>
+    <label for="formGroupExampleInput12">Дата защиты</label>
+    <input type="date" name="date_of_defense"  id="formGroupExampleInput12" min="1970-01-01"  {% if student %}value="{{ student.date_of_defense }}"{% else %}placeholder="Дата защиты"{% endif %}>
   </div>
   <div class="form-group">
-    <label for="formGroupExampleInput11">{% if student %}Временный адрес{% endif %}</label>
-    <input type="text" name="temporary_adress" class="form-control" id="formGroupExampleInput11" {% if student %}value="{{ student.temporary_adress }}"{% else %}placeholder="Временный адрес"{% endif %}>
+    <label for="formGroupExampleInput13">Дата отчисления</label>
+    <input type="date" name="date_of_discharge"  id="formGroupExampleInput13" min="1970-01-01"  {% if student %}value="{{ student.date_of_discharge }}"{% else %}placeholder="Дата отчисления"{% endif %}>
   </div>
   <div class="form-group">
-    <label for="formGroupExampleInput12">{% if student %}Номер телефона{% endif %}</label>
-    <input type="text" name="phone_number" class="form-control" id="formGroupExampleInput12" {% if student %}value="{{ student.phone_number }}"{% else %}placeholder="Номер телефона"{% endif %}>
+    <label for="formGroupExampleInput14">{% if student %}Причина отчисления{% endif %}</label>
+    <input type="text" name="reason_of_discharge" class="form-control" id="formGroupExampleInput14" {% if student %}value="{{ student.reason_of_discharge }}"{% else %}placeholder="Причина отчисления"{% endif %}>
   </div>
   <div class="form-group">
-    <label for="formGroupExampleInput13">{% if student %}Хобби и интересы{% endif %}</label>
-    <input type="text" name="hobbies_and_interests" class="form-control" id="formGroupExampleInput13" {% if student %}value="{{ student.hobbies_and_interests }}"{% else %}placeholder="Хобби и интересы"{% endif %}>
+    <label for="formGroupExampleInput15">{% if student %}Пол{% endif %}</label>
+    <input type="text" name="sex" class="form-control" id="formGroupExampleInput15" {% if student %}value="{{ student.sex }}"{% else %}placeholder="Пол"{% endif %}>
   </div>
   <div class="form-group">
-    <label for="formGroupExampleInput14">{% if student %}Место работы{% endif %}</label>
-    <input type="text" name="work_place" class="form-control" id="formGroupExampleInput14" {% if student %}value="{{ student.work_place }}"{% else %}placeholder="Место работы"{% endif %}>
+    <label for="formGroupExampleInput16">{% if student %}ID национальности{% endif %}</label>
+    <input type="text" name="id_nationality" class="form-control" id="formGroupExampleInput16" {% if student %}value="{{ student.id_nationality }}"{% else %}placeholder="ID национальности"{% endif %}>
   </div>
   <div class="form-group">
-    <label for="formGroupExampleInput15">{% if student %}ИНН{% endif %}</label>
-    <input type="text" name="INN" class="form-control" id="formGroupExampleInput15" {% if student %}value="{{ student.INN }}"{% else %}placeholder="ИНН"{% endif %}>
+    <label for="formGroupExampleInput17">{% if student %}Старая фамилия{% endif %}</label>
+    <input type="text" name="old_surname" class="form-control" id="formGroupExampleInput17" {% if student %}value="{{ student.old_surname }}"{% else %}placeholder="Старая фамилия"{% endif %}>
   </div>
   <div class="form-group">
-    <label for="formGroupExampleInput16">{% if student %}Паспортные данные{% endif %}</label>
-    <input type="text" name="passport_data" class="form-control" id="formGroupExampleInput16" {% if student %}value="{{ student.passport_data }}"{% else %}placeholder="Паспортные данные"{% endif %}>
+    <label for="formGroupExampleInput19">{% if student %}Старое имя{% endif %}</label>
+    <input type="text" name="old_name" class="form-control" id="formGroupExampleInput19" {% if student %}value="{{ student.old_name }}"{% else %}placeholder="Старое имя"{% endif %}>
   </div>
   <div class="form-group">
-    <label for="formGroupExampleInput17">{% if student %}СНИЛС{% endif %}</label>
-    <input type="text" name="SNILS" class="form-control" id="formGroupExampleInput17" {% if student %}value="{{ student.SNILS }}"{% else %}placeholder="СНИЛС"{% endif %}>
+    <label for="formGroupExampleInput20">{% if student %}Старое отчество{% endif %}</label>
+    <input type="text" name="old_patronymic" class="form-control" id="formGroupExampleInput20" {% if student %}value="{{ student.old_patronymic }}"{% else %}placeholder="Старое отчество"{% endif %}>
   </div>
   <div class="form-group">
-    <label for="formGroupExampleInput19">{% if student %}Год выпуска{% endif %}</label>
-    <input type="text" name="year_of_issue" class="form-control" id="formGroupExampleInput19" {% if student %}value="{{ student.year_of_issue }}"{% else %}placeholder="Год выпуска"{% endif %}>
-  </div>
-  <div class="form-group">
-    <label for="formGroupExampleInput20">{% if student %}Красный диплом{% endif %}</label>
-    <input type="text" name="diploma_with_distinction" class="form-control" id="formGroupExampleInput20" {% if student %}value="{{ student.diploma_with_distinction }}"{% else %}placeholder="Красный диплом"{% endif %}>
-  </div>
-  <div class="form-group">
-    <label for="formGroupExampleInput21">{% if student %}Номер диплома{% endif %}</label>
-    <input type="text" name="diploma_number" class="form-control" id="formGroupExampleInput21" {% if student %}value="{{ student.diploma_number }}"{% else %}placeholder="Номер диплома"{% endif %}>
-  </div>
-  <div class="form-group">
-    <label for="formGroupExampleInput22">{% if student %}ID группы{% endif %}</label>
-    <input type="text" name="grp_id" class="form-control" id="formGroupExampleInput22" {% if student %}value="{{ student.grp_id }}"{% else %}placeholder="ID группы"{% endif %}>
-  </div>
-  <div class="form-group">
-    <label for="formGroupExampleInput23">{% if student %}ID People{% endif %}</label>
-    <input type="text" name="id_People" class="form-control" id="formGroupExampleInput23" {% if student %}value="{{ student.id_People }}"{% else %}placeholder="ID People"{% endif %}>
-  </div>
-  <div class="form-group">
-    <label for="formGroupExampleInput24">{% if student %}Профили соцсетей{% endif %}</label>
-    <input type="text" name="social_web_profile" class="form-control" id="formGroupExampleInput24" {% if student %}value="{{ student.social_web_profile }}"{% else %}placeholder="Профили соцсетей"{% endif %}>
+    <label for="formGroupExampleInput21">Дата поступления</label>
+    <input type="date" name="date_in"  id="formGroupExampleInput21" min="1970-01-01"  {% if student %}value="{{ student.date_in }}"{% else %}placeholder="Дата поступления"{% endif %}>
   </div>
     <input type="submit" class="btn btn-primary" value="Подтвердить">
     <button type="cancel" class="btn btn-primary">Отмена</button>
+  </div>
 </form>
-
-
-</body>
-</html>
 {% endblock %}

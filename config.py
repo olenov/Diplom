@@ -9,7 +9,7 @@ class Configuration():
 
     DEBUG = True
 
-    SQLALCHEMY_DATABASE_URI = 'postgres://sql:1@localhost/Student2' # 'postgres://sql:1@localhost/Student'
+    SQLALCHEMY_DATABASE_URI = 'postgres://sql:1@localhost/Students2' # 'postgres://sql:1@localhost/Student'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
     WHOOSH_BASE = 'whoosh'

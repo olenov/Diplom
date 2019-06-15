@@ -31,15 +31,15 @@
         </div>
         {% endif %}
 
-      <form class="form-signin" method="POST" action="/login">
+      <form class="form-signin" method="POST" action="{{ url_for('login') }}">
         <h2 class="form-signin-heading">Войдите в учетную запись</h2>
         {{ form.hidden_tag() }}
         {{ wtf.form_field(form.username) }}
         {{ wtf.form_field(form.password) }}
-          <a href="/forgot_password">Забыли пароль?</a>
+          <a href="{{ url_for('forgot_pass') }}">Забыли пароль?</a>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
       </form>
 
     </div> <!-- /container -->
-<a href="/forgot_password"></a>
+<a href="{{ url_for('forgot_pass') }}"></a>
 {% endblock %}

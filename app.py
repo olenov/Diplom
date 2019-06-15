@@ -14,6 +14,9 @@ import os
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://sql:1@localhost/Students2'
+db = SQLAlchemy(app)
+
 
 app.config.from_object(Configuration)
 
@@ -39,3 +42,5 @@ wa.whoosh_index(app, Grp)
 @login_manager.user_loader
 def load_user(user_id):
     return Admin.query.get(int(user_id))
+
+

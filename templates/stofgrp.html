@@ -9,20 +9,20 @@
       <th scope="col">Отчество</th>
         <th scope="col">Место рождения</th>
       <th scope="col">Дата рождения</th>
-      <th scope="col">Адрес прописки</th>
-        <th scope="col">Базовое образование</th>
-      <th scope="col">ФИО родителей, место работы, номера телефонов</th>
-      <th scope="col">Финансовое положение</th>
-        <th scope="col">Временный адрес</th>
-      <th scope="col">Номер телефона</th>
-      <th scope="col">Хобби и интересы</th>
-        <th scope="col">Место работы</th>
-      <th scope="col">ИНН</th>
-      <th scope="col">Паспортные данные</th>
-        <th scope="col">СНИЛС</th>
-        <th scope="col">Год выпуска</th>
-        <th scope="col">Красный диплом</th>
-        <th scope="col">Номер диплома</th>
+      <th scope="col">ID группы</th>
+      <th scope="col">ID people</th>
+      <th scope="col">Профили соцсетей</th>
+        <th scope="col">Тема дипломной работы</th>
+      <th scope="col">Научный руководитель</th>
+      <th scope="col">Дата защиты</th>
+        <th scope="col">Дата отчисления</th>
+      <th scope="col">Причина отчисления</th>
+      <th scope="col">Пол</th>
+        <th scope="col">ID национальности</th>
+        <th scope="col">Старая фамилия</th>
+        <th scope="col">Старое имя</th>
+        <th scope="col">Старое отчество</th>
+        <th scope="col">Дата поступления</th>
     </tr>
   </thead>
   <tbody>
@@ -33,22 +33,26 @@
       <td>{{ student.patronymic }}</td>
       <td>{{ student.birth_place }}</td>
       <td>{{ student.birth_date }}</td>
-      <td>{{ student.registration_adress }}</td>
-      <td>{{ student.basic_education }}</td>
-      <td>{{ student.full_names_of_parents_work_place_phone_number }}</td>
-      <td>{{ student.financial_situation }}</td>
-      <td>{{ student.temporary_adress }}</td>
-      <td>{{ student.phone_number }}</td>
-      <td>{{ student.hobbies_and_interests }}</td>
-      <td>{{ student.work_place }}</td>
-      <td>{{ student.INN }}</td>
-      <td>{{ student.passport_data }}</td>
-      <td>{{ student.SNILS }}</td>
-      <td>{{ student.year_of_issue }}</td>
-      <td>{{ student.diploma_with_distinction }}</td>
-      <td>{{ student.diploma_number }}</td>
-      <td><a href="/edit/{{ student.id }}">Редактировать</a></td>
-      <td> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+      <td>{{ student.grp_id }}</td>
+      <td>{{ student.id_people }}</td>
+      <td><a href=" {{ student.social_web_profile }}">{{ student.social_web_profile }}</a></td>
+      <td>{{ student.thesis_topic }}</td>
+      <td>{{ student.scientific_director }}</td>
+      <td>{{ student.date_of_protection }}</td>
+      <td>{{ student.date_of_deduction }}</td>
+      <td>{{ student.cause_of_deduction }}</td>
+      <td>{{ student.sex }}</td>
+      <td>{{ student.id_nationality }}</td>
+      <td>{{ student.old_surname }}</td>
+      <td>{{ student.old_name}}</td>
+      <td>{{ student.old_patronymic}}</td>
+      <td>{{ student.date_in}}</td>
+      <td>{{ student.date_out}}</td>
+      <td><img src="{{ student.image}}" width="100" height="100" alt="Нет фотографии"></td>
+      <td><a href="{{ url_for('edit', id=student.id) }}"><button class="btn btn-primary"><svg id="i-edit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z" />
+</svg></button></a></td>
+      <td> <button type="button" class="btn btn-primary" onclick="document.getElementById('studentInfo').innerHTML = '{{student.name }} {{ student.surname }}'; document.getElementById('modalStudentId').value = {{ student.id }};" data-toggle="modal" data-target="#myModal" data-toggle="modal" data-target="#myModal">
     Удалить
   </button></td>
 
@@ -59,7 +63,7 @@
 
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title">Вы уверены, что хотите удалить студента {{ student.name }} {{ student.second_name }}?</h4>
+          <h4 class="modal-title">Вы уверены, что хотите удалить студента <span id="studentInfo"></span>?</h4>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
 
@@ -68,10 +72,10 @@
 
         <!-- Modal footer -->
         <div class="modal-footer">
-          <form method="post" action="/del_yes">
-                <input type="hidden" name="id" value="{{ student.id }}">
-                <button class="btn btn-danger" type="submit">Да</button>
-            <button action="/main" type="button" class="btn btn-danger" data-dismiss="modal">Нет</button>
+          <form method="post" action="{{ url_for('delet') }}">
+                <input id="modalStudentId" type="hidden" name="id" value="{{ student.id }}">
+                <button action="{{ url_for('ssig',id=grp.id) }}" class="btn btn-danger" type="submit">Да</button>
+            <button action="{{ url_for('ssig',id=grp.id) }}" type="button" class="btn btn-danger" data-dismiss="modal">Нет</button>
           </form>
         </div>
 

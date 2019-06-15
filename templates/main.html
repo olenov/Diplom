@@ -2,7 +2,7 @@
 {% block title %}Главная{% endblock %}
 {% block content %}
 <style>
-    .col-12{
+  .col-12{
   padding-left:8%;
   }
   .h3{
@@ -10,104 +10,77 @@
   }
 </style>
 <h3>Список выпускников</h3>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Фамилия</th>
-      <th scope="col">Имя</th>
-      <th scope="col">Отчество</th>
-        <th scope="col">Место рождения</th>
-      <th scope="col">Дата рождения</th>
-      <th scope="col">Адрес прописки</th>
-        <th scope="col">Базовое образование</th>
-      <th scope="col">ФИО родителей, место работы, номера телефонов</th>
-      <th scope="col">Финансовое положение</th>
-        <th scope="col">Временный адрес</th>
-      <th scope="col">Номер телефона</th>
-      <th scope="col">Хобби и интересы</th>
-        <th scope="col">Место работы</th>
-      <th scope="col">ИНН</th>
-      <th scope="col">Паспортные данные</th>
-        <th scope="col">СНИЛС</th>
-        <th scope="col">Год выпуска</th>
-        <th scope="col">Красный диплом</th>
-        <th scope="col">Номер диплома</th>
-        <th scope="col">Фотография</th>
-        <th scope="col">Профили соцсетей</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for student in pages.items %}
-  <tr>
-      <input type="hidden" name="id" value="{{ student.id }}">
-      <td>{{ student.surname }}</td>
-      <td>{{ student.name }}</td>
-      <td>{{ student.patronymic }}</td>
-      <td>{{ student.birth_place }}</td>
-      <td>{{ student.birth_date }}</td>
-      <td>{{ student.registration_adress }}</td>
-      <td>{{ student.basic_education }}</td>
-      <td>{{ student.full_names_of_parents_work_place_phone_number }}</td>
-      <td>{{ student.financial_situation }}</td>
-      <td>{{ student.temporary_adress }}</td>
-      <td>{{ student.phone_number }}</td>
-      <td>{{ student.hobbies_and_interests }}</td>
-      <td>{{ student.work_place }}</td>
-      <td>{{ student.INN }}</td>
-      <td>{{ student.passport_data }}</td>
-      <td>{{ student.SNILS }}</td>
-      <td>{{ student.year_of_issue}}</td>
-      <td>{{ student.diploma_with_distinction}}</td>
-      <td>{{ student.diploma_number}}</td>
-      <td><img src="{{ student.image}}" width="100" height="100" alt="Нет фотографии"></td>
-      <td><a href=" {{ student.social_web_profile }}">{{ student.social_web_profile }}</a></td>
-      <td><a href="/edit/{{ student.id }}"><button class="btn btn-primary"><svg id="i-edit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-    <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z" />
-</svg></button></a></td>
-      <td> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-    <svg id="i-trash" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-    <path d="M28 6 L6 6 8 30 24 30 26 6 4 6 M16 12 L16 24 M21 12 L20 24 M11 12 L12 24 M12 6 L13 2 19 2 20 6" />
-</svg>
-  </button></td>
-
-  <!-- The Modal -->
-  <div class="modal" id="myModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Вы уверены, что хотите удалить студента {{ student.name }} {{ student.second_name }}?</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-
-        <!-- Modal body -->
-
-
-        <!-- Modal footer -->
-        <div class="modal-footer">
-          <form method="post" action="/del_yes">
-                <button class="btn btn-danger" type="submit">Да</button>
-            <button action="/" type="button" class="btn btn-danger" data-dismiss="modal">Нет</button>
-          </form>
-        </div>
-
-      </div>
-    </div>
-  </div>
-    </tr>
-  {% endfor %}
-
-  </tbody>
-</table>
-
 <nav>
   <ul class="pagination">
     <li {% if not pages.has_prev %} class="page-item disabled" {% endif %}>
         <a class="page-link" href="{{ url_for('main') }}?page={{ pages.prev_num }}">Назад</a></li>
     {% for page in pages.iter_pages() %}
       <li {% if page == pages.page %} class="page-item active" {% endif %}>
-          <a class="page-link" href="{{ url_for('main') }}?page={{ page }}">{{ page }}</a></li>
+          <a class="page-link" href="{{ url_for('main') }}?page={{ page }}">{% if not page %} ... {% else %} {{ page }} {% endif %}</a></li>
+      {% endfor %}
+    <li {% if not pages.has_next %} class="page-item disabled" {% endif %}>
+      <a class="page-link" href="{{ url_for('main') }}?page={{ pages.next_num }}">Вперед</a></li>
+  </ul>
+</nav>
+<table class="table">
+  <thead>
+    <tr>
+        <th scope="col">ФИО</th>
+        <th scope="col">Место рождения</th>
+        <th scope="col">Дата рождения</th>
+        <th scope="col">Группа</th>
+        <th scope="col">Профили соцсетей</th>
+        <th scope="col">Дата отчисления</th>
+        <th scope="col">Причина отчисления</th>
+        <th scope="col">Пол</th>
+        <th scope="col">Дата поступления</th>
+        <th scope="col">Фотография</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for student in pages.items %}
+  <tr>
+      <td><a href="{{ url_for('edit', id=student.id) }}">{{ student.surname }}  {{ student.name }} {{ student.patronymic }}</a></td>
+      <td>{{ student.birth_place }}</td>
+      <td>{{ student.birth_date }}</td>
+      <td>{{ student.grp_id }}</td>
+      <td><a href=" {{ student.social_web_profile }}">{{ student.social_web_profile }}</a></td>
+      <td>{{ student.date_of_discharge }}</td>
+      <td>{{ student.reason_of_discharge }}</td>
+      <td>{{ student.sex }}</td>
+      <td>{{ student.date_in}}</td>
+      <td>{% if student.image %}<img src="{{ student.image }}" width="100" height="100" >{% else %}<img src="/static/nofoto.jpg" width="100" height="100">{% endif %}</td>
+      <td><button type="button" class="btn btn-primary" onclick="document.getElementById('studentInfo').innerHTML = '{{student.name }} {{ student.surname }}'; document.getElementById('modalStudentId').value = {{ student.id }};" data-toggle="modal" data-target="#myModal"><svg id="i-trash" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+          <path d="M28 6 L6 6 8 30 24 30 26 6 4 6 M16 12 L16 24 M21 12 L20 24 M11 12 L12 24 M12 6 L13 2 19 2 20 6" />
+      </svg></button></td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<div class="modal" id="myModal">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">Вы уверены, что хотите удалить студента <span id="studentInfo"></span>?</h4>
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-footer">
+    <form method="post" action="{{ url_for('delet') }}">
+      <input id="modalStudentId" type="hidden" name="id" value="0">
+      <button class="btn btn-danger" type="submit">Да</button>
+      <button action="{{ url_for('main') }}" type="button" class="btn btn-danger" data-dismiss="modal">Нет</button>
+    </form>
+    </div>
+  </div>
+</div>
+</div>
+<nav>
+  <ul class="pagination">
+    <li {% if not pages.has_prev %} class="page-item disabled" {% endif %}>
+        <a class="page-link" href="{{ url_for('main') }}?page={{ pages.prev_num }}">Назад</a></li>
+    {% for page in pages.iter_pages() %}
+      <li {% if page == pages.page %} class="page-item active" {% endif %}>
+          <a class="page-link" href="{{ url_for('main') }}?page={{ page }}">{% if not page %} ... {% else %} {{ page }} {% endif %}</a></li>
       {% endfor %}
     <li {% if not pages.has_next %} class="page-item disabled" {% endif %}>
       <a class="page-link" href="{{ url_for('main') }}?page={{ pages.next_num }}">Вперед</a></li>

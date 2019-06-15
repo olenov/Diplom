@@ -37,6 +37,7 @@
         padding-top: 5rem;
       }
     </style>
+    {% block extrahead %}{% endblock %}
   </head>
   <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
@@ -53,7 +54,7 @@
 
   <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
     <a class="dropdown-item" href="{{ url_for('add_student') }}">Добавить выпускника</a>
-    <a class="dropdown-item" href="/">Обзор</a>
+    <a class="dropdown-item" href="{{ url_for('main') }}">Обзор</a>
   </div>
 </div>
       <li class="nav-item">
@@ -63,7 +64,7 @@
   </a>
 
   <div class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-    <a class="dropdown-item" href="/openfiledialogpage">Импортировать xlsx</a>
+    <a class="dropdown-item" href="{{ url_for('ofdp') }}">Импортировать xlsx</a>
     <a class="dropdown-item" href="{{ url_for('generation') }}">Сгенерировать отчет</a>
   </div>
 </div>
@@ -75,14 +76,14 @@
   </a>
 
   <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-    <a class="dropdown-item" href="/groups">Обзор</a>
-    <a class="dropdown-item" href="/add_grp">Добавить группу</a>
+    <a class="dropdown-item" href="{{ url_for('groups') }}">Обзор</a>
+    <a class="dropdown-item" href="{{ url_for('ag') }}">Добавить группу</a>
   </div>
 </div>
       </li>
     </ul>
     <div id="username"> {{ session['username'] }} </div>
-    <form class="form-inline my-2 my-lg-0" action="/search_results" method="post">
+    <form class="form-inline my-2 my-lg-0" action="{{ url_for('show_results') }}" method="post">
      <input name="word" class="form-control mr-sm-2" type="text" placeholder="Поиск" aria-label="Поиск">
      <button class="btn btn-secondary my-2 my-sm-0"  type="submit" id="ss"><svg id="i-search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
     <circle cx="14" cy="14" r="12" />
@@ -95,9 +96,9 @@
 </svg>{{ name }}
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item" href="change_password">Сменить пароль</a>
-    <a class="dropdown-item" href="signup">Добавить пользователя</a>
-    <a class="dropdown-item" href="/logout"><svg id="i-signout" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <a class="dropdown-item" href="{{ url_for('change_pass') }}">Сменить пароль</a>
+    <a class="dropdown-item" href="{{ url_for('signup') }}">Добавить пользователя</a>
+    <a class="dropdown-item" href="{{ url_for('logout') }}"><svg id="i-signout" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
     <path d="M28 16 L8 16 M20 8 L28 16 20 24 M11 28 L3 28 3 4 11 4" />
 </svg></a>
   </div>
@@ -105,14 +106,16 @@
   </div>
 </nav>
 
-<div class="container-fluid">
+<div class="container">
   <div class="row">
-    <main role="main" class="col-12">
+    {% block maincol %}
+    <main role="main" class="col-10">
       {% block content %}
       {% endblock %}
-    </main><!-- /.container -->
+    </main>
+    {% endblock %}
   </div>
-</div>
+</div><!-- /.container -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script>window.jQuery || document.write('<script src="/docs/4.3/assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
 <!--script src="https://getbootstrap.com/docs/4.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script-->
