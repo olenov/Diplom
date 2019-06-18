@@ -28,7 +28,7 @@
     <div class="form-group">
         {% if group %} <input value="{{group.id}}" name="id" type="hidden"> {% endif %}
     <label for="formGroupExampleInput">{% if group %}Название группы{% endif %}</label>
-    <input type="text" name="name" class="form-control" id="formGroupExampleInput" {% if group %}value="{{ group.name }}"{% else %}placeholder="ID плана"{% endif %}>
+    <input type="text" name="name" class="form-control" id="formGroupExampleInput" {% if group %}value="{{ group.name }}"{% else %}placeholder="Название группы"{% endif %}>
   </div>
     <div class="form-group">
     <label for="formGroupExampleInput1">{% if group %}ID плана{% endif %}</label>
